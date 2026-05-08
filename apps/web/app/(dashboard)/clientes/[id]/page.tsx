@@ -134,7 +134,7 @@ export default function ClientePage() {
         <div className="bg-dark-800 border border-dark-border rounded-xl p-4 col-span-2 sm:col-span-1">
           <p className="text-[10px] font-mono uppercase text-text-muted">Cliente desde</p>
           <p className="font-display text-2xl font-extrabold text-text-primary">
-            {formatDate(customer.createdAt, 'short')}
+            {formatDate(customer.createdAt)}
           </p>
         </div>
       </div>
@@ -178,7 +178,7 @@ export default function ClientePage() {
                 <div className="flex-1 min-w-0">
                   <p className="font-semi font-semibold text-sm text-text-primary truncate">{e.name}</p>
                   <p className="text-xs text-text-muted">
-                    {formatDate(e.startDate, 'short')} — {formatDate(e.returnDate, 'short')}
+                    {formatDate(e.startDate)} — {formatDate(e.returnDate)}
                   </p>
                 </div>
                 {e.totalAmount && (

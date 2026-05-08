@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
-import type * as BcryptType from 'bcrypt';
+import type * as BcryptType from 'bcryptjs';
 import { AuthService } from './auth.service';
 
 const mockPrisma = {
@@ -14,7 +14,7 @@ const mockMail = { sendWelcome: vi.fn().mockResolvedValue(undefined) };
 
 let bcrypt: typeof BcryptType;
 beforeAll(async () => {
-  bcrypt = await import('bcrypt');
+  bcrypt = await import('bcryptjs');
 });
 
 describe('AuthService', () => {

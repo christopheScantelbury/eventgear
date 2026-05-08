@@ -3,18 +3,33 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { User, Building2, Users, CreditCard, LogOut, ChevronRight } from 'lucide-react';
+import { User, Building2, Users, CreditCard, LogOut, ChevronRight, KeyRound } from 'lucide-react';
 import { useAuthStore } from '@/store/auth.store';
 import { authApi } from '@/lib/api';
+import { isAdmin } from '@/lib/permissions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Dialog } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/toast';
 
 export default function ConfiguracoesPage() {
   const router = useRouter();
-  const { user, logout } = useAuthStore();
+  const { user, logout, setAuth, accessToken, refreshToken } = useAuthStore();
   const { toast } = useToast();
+
+  // Perfil
+  const [name, setName] = useState(user?.name ?? '');
+  const [savingProfile, setSavingProfile] = useState(false);
+
+  // Senha
+  const [pwOpen, setPwOpen] = useState(false);
+  const [currentPw, setCurrentPw] = useState('');
+  const [newPw, setNewPw] = useState('');
+  const [confirmPw, setConfirmPw] = useState('');
+  const [savingPw, setSavingPw] = useState(false);
+
+  // Logout
   const [confirmLogout, setConfirmLogout] = useState(false);
 
   const initials = (user?.name ?? 'U')
@@ -24,12 +39,49 @@ export default function ConfiguracoesPage() {
     .slice(0, 2)
     .toUpperCase();
 
-  async function handleLogout() {
+  async function handleSaveProfile() {
+    const trimmed = name.trim();
+    if (!trimmed || trimmed === user?.name) return;
+    setSavingProfile(true);
     try {
-      await authApi.logout();
+      const updated = await authApi.updateProfile({ name: trimmed });
+      if (user && accessToken && refreshToken) {
+        setAuth({ ...user, name: updated.name }, accessToken, refreshToken);
+      }
+      toast('Nome atualizado com sucesso', 'success');
     } catch {
-      /* ignora */
+      toast('Erro ao salvar alterações', 'error');
+    } finally {
+      setSavingProfile(false);
     }
+  }
+
+  async function handleChangePassword() {
+    if (!currentPw || !newPw || !confirmPw) {
+      toast('Preencha todos os campos', 'error'); return;
+    }
+    if (newPw.length < 8) {
+      toast('Nova senha deve ter ao menos 8 caracteres', 'error'); return;
+    }
+    if (newPw !== confirmPw) {
+      toast('As senhas não coincidem', 'error'); return;
+    }
+    setSavingPw(true);
+    try {
+      await authApi.updateProfile({ currentPassword: currentPw, newPassword: newPw });
+      toast('Senha alterada com sucesso', 'success');
+      setPwOpen(false);
+      setCurrentPw(''); setNewPw(''); setConfirmPw('');
+    } catch (e: unknown) {
+      const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      toast(typeof msg === 'string' ? msg : 'Senha atual incorreta', 'error');
+    } finally {
+      setSavingPw(false);
+    }
+  }
+
+  async function handleLogout() {
+    try { await authApi.logout(); } catch { /* ignora */ }
     logout();
     router.replace('/login');
   }
@@ -50,24 +102,42 @@ export default function ConfiguracoesPage() {
             <span className="font-display font-extrabold text-xl text-amber-400">{initials}</span>
           </div>
           <div className="min-w-0">
-            <p className="font-semi font-semibold text-text-primary truncate">
-              {user?.name ?? '—'}
-            </p>
+            <p className="font-semi font-semibold text-text-primary truncate">{user?.name ?? '—'}</p>
             <p className="text-sm text-text-muted truncate">{user?.email}</p>
           </div>
         </div>
         <div className="space-y-3">
           <div>
-            <Label>Nome completo</Label>
-            <Input defaultValue={user?.name ?? ''} placeholder="Seu nome" />
+            <Label htmlFor="profile-name">Nome completo</Label>
+            <Input
+              id="profile-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Seu nome"
+            />
           </div>
           <div>
             <Label>E-mail</Label>
-            <Input value={user?.email ?? ''} disabled readOnly className="opacity-60 cursor-not-allowed" />
+            <Input
+              value={user?.email ?? ''}
+              disabled
+              readOnly
+              className="opacity-60 cursor-not-allowed"
+            />
           </div>
-          <Button variant="ghost" size="sm" onClick={() => toast('Funcionalidade em breve', 'success')}>
-            Alterar senha
-          </Button>
+          <div className="flex gap-2 pt-1">
+            <Button
+              size="sm"
+              onClick={handleSaveProfile}
+              disabled={savingProfile || name.trim() === user?.name}
+            >
+              {savingProfile ? 'Salvando…' : 'Salvar nome'}
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => setPwOpen(true)}>
+              <KeyRound size={13} />
+              Alterar senha
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -76,42 +146,30 @@ export default function ConfiguracoesPage() {
         <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[2px] text-text-muted mb-4">
           <Building2 size={12} /> Empresa
         </div>
-        <div className="space-y-3">
-          <div>
-            <Label>Nome da empresa</Label>
-            <Input placeholder="Nome da sua empresa" />
-          </div>
-          <div>
-            <Label>Telefone</Label>
-            <Input placeholder="(11) 99999-9999" />
-          </div>
-          <div>
-            <Label>Cidade / Estado</Label>
-            <Input placeholder="São Paulo, SP" />
-          </div>
-          <Button onClick={() => toast('Alterações salvas!', 'success')}>
-            Salvar alterações
-          </Button>
-        </div>
-      </section>
-
-      {/* Usuários */}
-      <section className="bg-dark-800 border border-dark-border rounded-xl p-5 mb-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[2px] text-text-muted">
-            <Users size={12} /> Usuários
-          </div>
-          <Link
-            href="/configuracoes/usuarios"
-            className="flex items-center gap-1 text-sm text-amber-400 hover:text-amber-300 font-medium transition-colors"
-          >
-            Gerenciar <ChevronRight size={14} />
-          </Link>
-        </div>
         <p className="text-sm text-text-muted">
-          Convide colaboradores e gerencie permissões de acesso.
+          {user?.companyName ?? 'Sua empresa'}
         </p>
       </section>
+
+      {/* Usuários — somente admin */}
+      {isAdmin(user?.role) && (
+        <section className="bg-dark-800 border border-dark-border rounded-xl p-5 mb-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[2px] text-text-muted">
+              <Users size={12} /> Usuários
+            </div>
+            <Link
+              href="/configuracoes/usuarios"
+              className="flex items-center gap-1 text-sm text-amber-400 hover:text-amber-300 font-medium transition-colors"
+            >
+              Gerenciar <ChevronRight size={14} />
+            </Link>
+          </div>
+          <p className="text-sm text-text-muted">
+            Adicione colaboradores e controle os papéis de acesso de cada um.
+          </p>
+        </section>
+      )}
 
       {/* Plano */}
       <section className="bg-dark-800 border border-dark-border rounded-xl p-5 mb-4">
@@ -120,11 +178,11 @@ export default function ConfiguracoesPage() {
         </div>
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-semi font-semibold text-text-primary">Plano Grátis</p>
-            <p className="text-sm text-text-muted mt-0.5">Até 50 materiais · 10 eventos/mês</p>
+            <p className="font-semi font-semibold text-text-primary">Trial gratuito</p>
+            <p className="text-sm text-text-muted mt-0.5">1 mês grátis · depois escolha um plano</p>
           </div>
-          <Button size="sm" variant="ghost" onClick={() => toast('Upgrade em breve!', 'success')}>
-            Fazer upgrade
+          <Button size="sm" variant="ghost" onClick={() => toast('Planos em breve!', 'success')}>
+            Ver planos
           </Button>
         </div>
       </section>
@@ -139,13 +197,12 @@ export default function ConfiguracoesPage() {
         </div>
       </div>
 
-      {/* Botão de logout */}
+      {/* Logout */}
       <div className="fixed bottom-16 md:bottom-0 left-0 right-0 p-4 bg-dark-900 border-t border-dark-border md:static md:bg-transparent md:border-0 md:p-0 md:mt-4">
         {confirmLogout ? (
           <div className="flex gap-3">
             <Button block variant="danger" onClick={handleLogout}>
-              <LogOut size={16} />
-              Confirmar saída
+              <LogOut size={16} /> Confirmar saída
             </Button>
             <Button block variant="ghost" onClick={() => setConfirmLogout(false)}>
               Cancelar
@@ -156,11 +213,34 @@ export default function ConfiguracoesPage() {
             onClick={() => setConfirmLogout(true)}
             className="w-full flex items-center justify-center gap-2 py-3 text-status-lost hover:text-red-300 font-medium text-sm transition-colors"
           >
-            <LogOut size={16} />
-            Sair da conta
+            <LogOut size={16} /> Sair da conta
           </button>
         )}
       </div>
+
+      {/* Modal alterar senha */}
+      <Dialog open={pwOpen} onClose={() => { setPwOpen(false); setCurrentPw(''); setNewPw(''); setConfirmPw(''); }} title="Alterar senha">
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="pw-current">Senha atual</Label>
+            <Input id="pw-current" type="password" value={currentPw} onChange={(e) => setCurrentPw(e.target.value)} placeholder="••••••••" />
+          </div>
+          <div>
+            <Label htmlFor="pw-new">Nova senha</Label>
+            <Input id="pw-new" type="password" value={newPw} onChange={(e) => setNewPw(e.target.value)} placeholder="Mínimo 8 caracteres" />
+          </div>
+          <div>
+            <Label htmlFor="pw-confirm">Confirmar nova senha</Label>
+            <Input id="pw-confirm" type="password" value={confirmPw} onChange={(e) => setConfirmPw(e.target.value)} placeholder="Repita a nova senha" />
+          </div>
+          <div className="flex gap-3 pt-1">
+            <Button onClick={handleChangePassword} disabled={savingPw}>
+              {savingPw ? 'Salvando…' : 'Alterar senha'}
+            </Button>
+            <Button variant="ghost" onClick={() => setPwOpen(false)}>Cancelar</Button>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 }

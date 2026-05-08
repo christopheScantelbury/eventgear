@@ -8,6 +8,7 @@ import * as bcrypt from 'bcryptjs';
 import { UserRole } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -38,6 +39,24 @@ export class UsersService {
       where: { companyId },
       select: { id: true, name: true, email: true, role: true, companyId: true, createdAt: true },
       orderBy: { createdAt: 'asc' },
+    });
+  }
+
+  async update(companyId: string, requesterId: string, targetId: string, dto: UpdateUserDto) {
+    if (requesterId === targetId && dto.role) {
+      throw new ForbiddenException('Cannot change your own role');
+    }
+
+    const user = await this.prisma.user.findFirst({ where: { id: targetId, companyId } });
+    if (!user) throw new NotFoundException('User not found');
+
+    return this.prisma.user.update({
+      where: { id: targetId },
+      data: {
+        ...(dto.name && { name: dto.name }),
+        ...(dto.role && { role: dto.role }),
+      },
+      select: { id: true, name: true, email: true, role: true, companyId: true, createdAt: true },
     });
   }
 

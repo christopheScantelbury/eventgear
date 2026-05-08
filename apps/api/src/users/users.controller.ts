@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -17,6 +18,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser, AuthUser } from '../auth/decorators/current-user.decorator';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -36,6 +38,16 @@ export class UsersController {
   @ApiOperation({ summary: 'Listar usuarios da empresa (somente ADMIN)' })
   findAll(@CurrentUser() user: AuthUser) {
     return this.users.findAll(user.companyId);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Atualizar nome/papel do usuário (somente ADMIN)' })
+  update(
+    @CurrentUser() user: AuthUser,
+    @Param('id') id: string,
+    @Body() dto: UpdateUserDto,
+  ) {
+    return this.users.update(user.companyId, user.id, id, dto);
   }
 
   @Delete(':id')

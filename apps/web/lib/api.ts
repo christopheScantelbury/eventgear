@@ -90,6 +90,18 @@ export const authApi = {
     api.post('/auth/refresh', { refreshToken }).then((r) => r.data),
   me: () => api.get('/auth/me').then((r) => r.data),
   logout: () => api.post('/auth/logout').then((r) => r.data),
+  updateProfile: (data: { name?: string; currentPassword?: string; newPassword?: string }) =>
+    api.patch('/auth/profile', data).then((r) => r.data),
+};
+
+// --- Users (admin) ---
+export const usersApi = {
+  list: () => api.get('/users').then((r) => r.data),
+  create: (data: { name: string; email: string; password: string; role?: string }) =>
+    api.post('/users', data).then((r) => r.data),
+  update: (id: string, data: { name?: string; role?: string }) =>
+    api.patch(`/users/${id}`, data).then((r) => r.data),
+  remove: (id: string) => api.delete(`/users/${id}`),
 };
 
 // --- Materials ---

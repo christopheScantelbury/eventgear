@@ -19,55 +19,55 @@ import {
 /* ─── Planos ─────────────────────────────────────────────────── */
 const plans = [
   {
-    name: 'Starter',
-    price: 'R$ 0',
-    period: 'gratuito para sempre',
-    description: 'Para começar e testar sem compromisso.',
+    name: 'Básico',
+    price: 'R$ 79',
+    period: 'por conta / mês',
+    description: 'Para quem está começando a organizar eventos.',
     highlight: false,
-    cta: 'Criar conta grátis',
-    href: '/register',
+    cta: 'Começar 1 mês grátis',
+    href: '/register?plan=basico',
     features: [
-      '1 operador',
-      'Até 100 equipamentos',
-      'Até 10 eventos / mês',
+      '3 usuários',
+      'Até 200 equipamentos',
+      'Até 20 eventos / mês',
       'Checklist com QR Code',
       'Relatórios básicos',
     ],
-    missing: ['Exportação PDF', 'Múltiplos operadores', 'Suporte prioritário'],
+    missing: ['Exportação PDF', 'Usuários ilimitados', 'Suporte prioritário'],
   },
   {
-    name: 'Profissional',
-    price: 'R$ 79',
+    name: 'Pro',
+    price: 'R$ 149',
     period: 'por conta / mês',
     description: 'Para equipes que trabalham com eventos regularmente.',
     highlight: true,
-    cta: 'Começar 14 dias grátis',
+    cta: 'Começar 1 mês grátis',
     href: '/register?plan=pro',
     features: [
-      '3 operadores',
+      '10 usuários',
       'Equipamentos ilimitados',
       'Eventos ilimitados',
       'Checklist com QR Code',
       'Relatórios completos + PDF',
       'Suporte prioritário',
     ],
-    missing: ['Operadores ilimitados'],
+    missing: ['Múltiplas unidades'],
   },
   {
     name: 'Business',
-    price: 'R$ 199',
+    price: 'R$ 249',
     period: 'por conta / mês',
     description: 'Para empresas com múltiplas equipes e alto volume.',
     highlight: false,
-    cta: 'Falar com vendas',
-    href: 'mailto:contato@eventgear.com.br',
+    cta: 'Começar 1 mês grátis',
+    href: '/register?plan=business',
     features: [
-      'Operadores ilimitados',
+      '25 usuários',
       'Equipamentos ilimitados',
       'Eventos ilimitados',
       'Checklist com QR Code',
       'Relatórios completos + PDF',
-      'API de integração',
+      'Múltiplas unidades / filiais',
       'Suporte dedicado',
     ],
     missing: [],
@@ -109,8 +109,8 @@ const faqs = [
     a: 'Cada equipamento cadastrado gera um QR Code único. Você imprime e cola no item. Na saída e no retorno do evento, o operador escaneia e o sistema registra automaticamente.',
   },
   {
-    q: 'O plano gratuito tem limite de tempo?',
-    a: 'Não. O plano Starter é gratuito para sempre, com os limites descritos. Você só assina quando precisar de mais recursos.',
+    q: 'O teste gratuito tem limite de tempo?',
+    a: 'Sim. Todos os planos incluem 1 mês grátis sem cartão de crédito. Após o período de teste, você escolhe o plano que melhor se encaixa no seu uso — ou cancela sem custo.',
   },
   {
     q: 'Posso cancelar quando quiser?',
@@ -224,7 +224,7 @@ export default function LandingPage() {
                   href="/register"
                   className="inline-flex items-center justify-center gap-2 rounded-md bg-amber-500 px-6 py-3 text-base font-semibold text-white hover:bg-amber-600 transition-colors shadow-sm"
                 >
-                  Começar 14 dias grátis
+                  Começar 1 mês grátis
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
@@ -236,7 +236,7 @@ export default function LandingPage() {
               </div>
 
               <div className="mt-5 flex flex-wrap gap-x-5 gap-y-1.5">
-                {['Sem cartão de crédito', '14 dias grátis', 'Cancele quando quiser'].map((t) => (
+                {['Sem cartão de crédito', '1 mês grátis', 'Cancele quando quiser'].map((t) => (
                   <span key={t} className="flex items-center gap-1.5 text-sm text-gray-500">
                     <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
                     {t}

@@ -87,10 +87,10 @@ jobs:
             -d "{}"
 
       - name: Wait for build + boot
-        run: sleep 420
+        run: sleep 600
 
       - name: Health check Web
-        timeout-minutes: 10
+        timeout-minutes: 15
         run: |
           for i in $(seq 1 20); do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" \

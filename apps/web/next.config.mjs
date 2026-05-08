@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  transpilePackages: ['@eventgear/shared', '@eventgear/ui'],
   images: {
     remotePatterns: [
       {

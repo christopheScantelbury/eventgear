@@ -21,14 +21,17 @@ const navSections: { label: string; items: NavItem[] }[] = [
     label: 'Operação',
     items: [
       { href: '/dashboard',  label: 'Dashboard',    exact: true, module: 'dashboard'  },
-      { href: '/materiais',  label: 'Materiais',                  module: 'materiais'  },
-      { href: '/eventos',    label: 'Eventos',                    module: 'eventos'    },
-      { href: '/relatorios', label: 'Relatórios',                 module: 'relatorios' },
+      { href: '/calendario', label: 'Calendário',                module: 'calendario' },
+      { href: '/eventos',    label: 'Eventos',                   module: 'eventos'    },
+      { href: '/materiais',  label: 'Materiais',                 module: 'materiais'  },
+      { href: '/clientes',   label: 'Clientes',                  module: 'clientes'   },
+      { href: '/relatorios', label: 'Relatórios',                module: 'relatorios' },
     ],
   },
   {
     label: 'Sistema',
     items: [
+      { href: '/planos',        label: 'Planos',        module: 'planos'        },
       { href: '/configuracoes', label: 'Configurações', module: 'configuracoes' },
     ],
   },

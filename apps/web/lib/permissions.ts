@@ -5,7 +5,10 @@ export type AppModule =
   | 'dashboard'
   | 'materiais'
   | 'eventos'
+  | 'clientes'
+  | 'calendario'
   | 'relatorios'
+  | 'planos'
   | 'configuracoes'
   | 'usuarios';
 
@@ -18,7 +21,10 @@ const ROLE_PERMISSIONS: Record<UserRole, Record<AppModule, AccessLevel>> = {
     dashboard:    'FULL',
     materiais:    'FULL',
     eventos:      'FULL',
+    clientes:     'FULL',
+    calendario:   'FULL',
     relatorios:   'FULL',
+    planos:       'FULL',
     configuracoes:'FULL',
     usuarios:     'FULL',
   },
@@ -26,7 +32,10 @@ const ROLE_PERMISSIONS: Record<UserRole, Record<AppModule, AccessLevel>> = {
     dashboard:    'VIEW',
     materiais:    'FULL',
     eventos:      'FULL',
+    clientes:     'FULL',
+    calendario:   'VIEW',
     relatorios:   'VIEW',
+    planos:       'NONE',
     configuracoes:'NONE',
     usuarios:     'NONE',
   },

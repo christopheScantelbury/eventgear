@@ -104,6 +104,106 @@ export const usersApi = {
   remove: (id: string) => api.delete(`/users/${id}`),
 };
 
+// --- Customers (CRM) ---
+export type CustomerType = 'PJ' | 'PF';
+export interface Customer {
+  id: string;
+  name: string;
+  type: CustomerType;
+  document?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  zipCode?: string | null;
+  notes?: string | null;
+  tags: string[];
+  createdAt: string;
+  _count?: { events: number };
+}
+
+export const customersApi = {
+  list: (params?: { page?: number; limit?: number; search?: string; tag?: string }) =>
+    api.get('/customers', { params }).then((r) => r.data as { items: Customer[]; total: number; page: number; limit: number; totalPages: number }),
+  get: (id: string) => api.get(`/customers/${id}`).then((r) => r.data),
+  create: (data: Partial<Customer>) => api.post('/customers', data).then((r) => r.data as Customer),
+  update: (id: string, data: Partial<Customer>) => api.patch(`/customers/${id}`, data).then((r) => r.data as Customer),
+  remove: (id: string) => api.delete(`/customers/${id}`),
+};
+
+// --- Billing ---
+export interface Plan {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  maxMaterials: number;       // -1 = ilimitado
+  maxEventsPerMonth: number;
+  maxUsers: number;
+  maxBranches: number;
+  hasReports: boolean;
+  hasPdfExport: boolean;
+  hasMultiBranch: boolean;
+  priceMonthlyBrl: string;    // Decimal vem como string
+}
+
+export interface BillingStatus {
+  company: { id: string; name: string; trialEndsAt: string | null };
+  plan: Plan | null;
+  subscription: {
+    id: string;
+    status: string;
+    currentPeriodEnd: string | null;
+    trialEndsAt: string | null;
+    cancelAt: string | null;
+  } | null;
+  usage: { materials: number; eventsThisMonth: number; users: number };
+}
+
+export const billingApi = {
+  plans: () => api.get('/billing/plans').then((r) => r.data as Plan[]),
+  status: () => api.get('/billing/status').then((r) => r.data as BillingStatus),
+  usage: () => api.get('/billing/usage').then((r) => r.data as { materials: number; eventsThisMonth: number; users: number }),
+  checkout: (planSlug: string) =>
+    api.post('/billing/checkout', { planSlug }).then((r) => r.data as { url: string; sessionId: string }),
+  portal: () => api.post('/billing/portal').then((r) => r.data as { url: string }),
+};
+
+// --- Calendar ---
+export interface AvailabilityItem {
+  materialId: string;
+  name: string;
+  category: string;
+  totalQty: number;
+  allocated: number;
+  available: number;
+  blocked: boolean;
+  dailyRentPrice: string | null;
+  conflicts: { eventId: string; eventName: string; qty: number }[];
+}
+
+export interface CalendarEvent {
+  id: string;
+  name: string;
+  startDate: string;
+  returnDate: string;
+  location: string | null;
+  status: string;
+  client: string | null;
+  customer: { id: string; name: string } | null;
+  totalAmount: string | null;
+  paid: boolean;
+  _count: { materials: number };
+}
+
+export const calendarApi = {
+  availability: (params: { startDate: string; endDate: string; excludeEventId?: string }) =>
+    api.get('/calendar/availability', { params }).then((r) => r.data as AvailabilityItem[]),
+  events: (params: { start: string; end: string }) =>
+    api.get('/calendar/events', { params }).then((r) => r.data as CalendarEvent[]),
+};
+
 // --- Materials ---
 export const materialsApi = {
   list: (params?: { page?: number; limit?: number; search?: string; status?: string }) =>

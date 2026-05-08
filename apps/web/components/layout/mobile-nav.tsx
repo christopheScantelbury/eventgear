@@ -2,14 +2,15 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Package, CalendarDays, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, Package, CalendarDays, Users, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Início', exact: true },
-  { href: '/materiais', icon: Package, label: 'Materiais' },
-  { href: '/eventos', icon: CalendarDays, label: 'Eventos' },
-  { href: '/relatorios', icon: BarChart3, label: 'Relatórios' },
+  { href: '/dashboard',  icon: LayoutDashboard, label: 'Início',     exact: true },
+  { href: '/calendario', icon: Calendar,        label: 'Calendário'              },
+  { href: '/eventos',    icon: CalendarDays,    label: 'Eventos'                 },
+  { href: '/materiais',  icon: Package,         label: 'Materiais'               },
+  { href: '/clientes',   icon: Users,           label: 'Clientes'                },
 ];
 
 export function MobileNav() {
@@ -39,7 +40,7 @@ export function MobileNav() {
                 active ? 'text-amber-400' : 'text-text-secondary hover:text-text-primary',
               )}
             >
-              <Icon size={20} />
+              <Icon size={18} />
               <span className="font-mono text-[9px] uppercase tracking-[1px]">
                 {label}
               </span>

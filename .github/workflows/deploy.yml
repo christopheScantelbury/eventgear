@@ -96,10 +96,12 @@ jobs:
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
               "${{ secrets.WEB_HEALTH_URL }}" || echo "000")
             echo "Attempt $i: HTTP $STATUS"
-            if [ "$STATUS" = "200" ] || [ "$STATUS" = "301" ] || [ "$STATUS" = "302" ]; then
-              echo "Web deploy OK"
-              exit 0
-            fi
+            case "$STATUS" in
+              200|301|302|307|308)
+                echo "Web deploy OK"
+                exit 0
+                ;;
+            esac
             sleep 30
           done
           echo "Web health check failed after ~10min"

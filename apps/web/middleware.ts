@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Paths that never require auth (landing + auth pages)
-const PUBLIC_PATHS = ['/', '/login', '/register'];
+const PUBLIC_PATHS = ['/', '/login', '/register', '/forgot-password'];
 // Paths that redirect logged-in users to /dashboard
-const AUTH_ONLY_PATHS = ['/login', '/register'];
+const AUTH_ONLY_PATHS = ['/login', '/register', '/forgot-password'];
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

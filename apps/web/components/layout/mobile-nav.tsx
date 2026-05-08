@@ -2,15 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Package, CalendarDays, ClipboardCheck, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, Package, CalendarDays, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Início', exact: true },
-  { href: '/dashboard/materials', icon: Package, label: 'Materiais' },
-  { href: '/dashboard/events', icon: CalendarDays, label: 'Eventos' },
-  { href: '/dashboard/checklist', icon: ClipboardCheck, label: 'Checklist' },
-  { href: '/dashboard/reports', icon: BarChart3, label: 'Relatórios' },
+  { href: '/materiais', icon: Package, label: 'Materiais' },
+  { href: '/eventos', icon: CalendarDays, label: 'Eventos' },
+  { href: '/relatorios', icon: BarChart3, label: 'Relatórios' },
 ];
 
 export function MobileNav() {

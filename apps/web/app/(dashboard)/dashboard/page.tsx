@@ -67,7 +67,7 @@ export default function DashboardPage() {
       </h2>
       <div className="grid sm:grid-cols-2 gap-3">
         <Link
-          href="/dashboard/materials/new"
+          href="/materiais/novo"
           className="group bg-dark-800 border border-dark-border rounded-xl p-5 hover:border-amber-700 transition-colors"
         >
           <div className="w-11 h-11 bg-dark-700 border border-dark-border-med rounded-md flex items-center justify-center mb-3 group-hover:border-amber-600 transition-colors">
@@ -82,7 +82,7 @@ export default function DashboardPage() {
         </Link>
 
         <Link
-          href="/dashboard/events/new"
+          href="/eventos/novo"
           className="group bg-dark-800 border border-dark-border rounded-xl p-5 hover:border-amber-700 transition-colors"
         >
           <div className="w-11 h-11 bg-dark-700 border border-dark-border-med rounded-md flex items-center justify-center mb-3 group-hover:border-amber-600 transition-colors">

@@ -13,15 +13,15 @@ const navSections = [
   {
     label: 'Operação',
     items: [
-      { href: '/dashboard', label: 'Visão Geral', exact: true },
-      { href: '/dashboard/materials', label: 'Materiais' },
-      { href: '/dashboard/events', label: 'Eventos' },
-      { href: '/dashboard/checklist', label: 'Checklist' },
+      { href: '/dashboard', label: 'Dashboard', exact: true },
+      { href: '/materiais', label: 'Materiais' },
+      { href: '/eventos', label: 'Eventos' },
+      { href: '/relatorios', label: 'Relatórios' },
     ],
   },
   {
-    label: 'Insights',
-    items: [{ href: '/dashboard/reports', label: 'Relatórios' }],
+    label: 'Sistema',
+    items: [{ href: '/configuracoes', label: 'Configurações' }],
   },
 ];
 

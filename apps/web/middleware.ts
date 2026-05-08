@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const PUBLIC_PATHS = ['/login', '/register'];
+// Paths that never require auth (landing + auth pages)
+const PUBLIC_PATHS = ['/', '/login', '/register'];
+// Paths that redirect logged-in users to /dashboard
+const AUTH_ONLY_PATHS = ['/login', '/register'];
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const isPublic = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
+  const isPublic = PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'));
+  const isAuthOnly = AUTH_ONLY_PATHS.some((p) => pathname.startsWith(p));
 
   // Zustand persiste em 'eg-auth' no localStorage — não acessível no middleware
   // Usamos o cookie que definimos manualmente no setAuth
@@ -17,7 +21,8 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (isPublic && token) {
+  // Redirect logged-in users away from /login and /register only
+  if (isAuthOnly && token) {
     const url = req.nextUrl.clone();
     url.pathname = '/dashboard';
     return NextResponse.redirect(url);

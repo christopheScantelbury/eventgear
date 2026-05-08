@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { BrandLockup } from '@/components/brand/logo';
+import { EcossistemaScantelbury } from '@/components/landing/ecossistema-scantelbury';
 import {
   Package,
   CalendarDays,
@@ -478,59 +479,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Ecossistema ScantelburyDevs ─────────────────────────── */}
-      <section className="py-16 px-4 sm:px-6 border-y border-gray-100">
-        <div className="mx-auto max-w-4xl text-center">
-          <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-8">
-            ECOSSISTEMA SCANTELBURYDEVS
-          </p>
-          <div className="grid sm:grid-cols-3 gap-4">
-            {[
-              {
-                name: 'Nota Fácil',
-                desc: 'Emissão de NFS-e Nacional para MEI, ME e EPP.',
-                href: 'https://emitirnotafacil.com.br',
-                current: false,
-              },
-              {
-                name: 'EventGear',
-                desc: 'Gestão de equipamentos para eventos com QR Code.',
-                href: '/',
-                current: true,
-              },
-              {
-                name: 'Agenda Inteligente',
-                desc: 'Agendamento online com NF-e integrada para serviços.',
-                href: 'https://agendainteligentefrontend.agendainteligenteapp.cloud',
-                current: false,
-              },
-            ].map((p) => (
-              <a
-                key={p.name}
-                href={p.href}
-                className={[
-                  'rounded-xl border p-5 text-left transition-all',
-                  p.current
-                    ? 'border-amber-400 bg-amber-50 cursor-default'
-                    : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm',
-                ].join(' ')}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <p className={`font-semibold text-sm ${p.current ? 'text-amber-700' : 'text-gray-900'}`}>
-                    {p.name}
-                  </p>
-                  {p.current && (
-                    <span className="text-[10px] font-semibold uppercase tracking-wider text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">
-                      Você está aqui
-                    </span>
-                  )}
-                </div>
-                <p className="text-xs text-gray-500 leading-relaxed">{p.desc}</p>
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
+      <EcossistemaScantelbury />
 
       {/* ── CTA Final ──────────────────────────────────────────── */}
       <section className="py-20 sm:py-28 px-4 sm:px-6 bg-gray-900">

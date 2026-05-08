@@ -11,15 +11,13 @@ export class HealthController {
   @ApiOperation({ summary: 'Health check' })
   async check() {
     let db = 'ok';
-    let dbError: string | undefined;
     try {
       await this.prisma.$queryRaw`SELECT 1`;
-    } catch (err: unknown) {
+    } catch {
       db = 'error';
-      dbError = err instanceof Error ? err.message.substring(0, 200) : String(err);
     }
 
     const status = db === 'ok' ? 'ok' : 'degraded';
-    return { status, db, dbError, timestamp: new Date().toISOString() };
+    return { status, db, timestamp: new Date().toISOString() };
   }
 }

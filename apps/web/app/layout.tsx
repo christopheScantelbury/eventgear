@@ -36,13 +36,6 @@ export const metadata: Metadata = {
   description: 'Cadastre equipamentos, crie eventos e faça checklist de saída e retorno via QR Code.',
   manifest: '/manifest.json',
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'EventGear' },
-  icons: {
-    icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-    ],
-    shortcut: '/favicon.svg',
-    apple: '/favicon.svg',
-  },
 };
 
 export const viewport: Viewport = {

@@ -82,31 +82,53 @@ jobs:
     environment: production
 
     steps:
+      - name: Capture pre-deploy bundle hash
+        id: pre
+        run: |
+          # Try to capture the current page bundle hash so we can confirm the
+          # new build is actually live (not just the old container answering).
+          HASH=$(curl -sf "${{ secrets.WEB_HEALTH_URL }}" 2>/dev/null \
+            | grep -o 'page-[a-f0-9]*\.js' | head -1 || echo "none")
+          echo "hash=$HASH"
+          echo "hash=$HASH" >> "$GITHUB_OUTPUT"
+
       - name: Trigger rebuild (Web)
         run: |
           curl -f -X POST "${{ secrets.EASYPANEL_WEB_WEBHOOK }}" \
             -H "Content-Type: application/json" \
             -d "{}"
 
-      - name: Wait for new container (smart poll)
+      - name: Wait for new bundle hash
         timeout-minutes: 20
+        env:
+          PRE_HASH: ${{ steps.pre.outputs.hash }}
         run: |
-          # Next.js build is slower than NestJS — give it 90s before polling.
-          # Tries: ~110 attempts * 10s = ~18 min ceiling.
-          sleep 90
-          for i in $(seq 1 110); do
+          # Next.js build is slower than NestJS — give it 2min before polling.
+          # If the site was already down before deploy (hash=none), just wait
+          # for any 200 response. Otherwise wait for the bundle hash to change.
+          echo "Pre-deploy bundle hash: $PRE_HASH"
+          sleep 120
+          for i in $(seq 1 100); do
+            # Fetch the login page HTML
+            BODY=$(curl -sf "${{ secrets.WEB_HEALTH_URL }}" 2>/dev/null || echo "")
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
               "${{ secrets.WEB_HEALTH_URL }}" || echo "000")
-            echo "Attempt $i: HTTP $STATUS"
-            case "$STATUS" in
-              200|301|302|307|308)
-                echo "Web deploy OK"
-                exit 0
-                ;;
-            esac
+            NEW_HASH=$(echo "$BODY" | grep -o 'page-[a-f0-9]*\.js' | head -1 || echo "")
+            echo "Attempt $i: HTTP $STATUS  hash=$NEW_HASH"
+            # Success conditions:
+            # 1. Site was down before (hash=none) and now returns 200
+            # 2. Bundle hash has changed (confirming new build is live)
+            if [ "$PRE_HASH" = "none" ] && [ "$STATUS" = "200" ]; then
+              echo "Web deploy OK (site was down, now up)"
+              exit 0
+            fi
+            if [ -n "$NEW_HASH" ] && [ "$NEW_HASH" != "$PRE_HASH" ]; then
+              echo "Web deploy OK (new bundle: $NEW_HASH)"
+              exit 0
+            fi
             sleep 10
           done
-          echo "Web health check failed after ~18min"
+          echo "Web health check failed after ~20min"
           exit 1
 
   # ── 4. Notificacao final ──────────────────────────────────────────────────

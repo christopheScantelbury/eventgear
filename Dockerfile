@@ -31,7 +31,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-RUN apk add --no-cache dumb-init
+RUN apk add --no-cache dumb-init openssl
 
 COPY --from=builder /app/apps/api/dist               ./dist
 COPY --from=builder /app/apps/api/prisma             ./prisma

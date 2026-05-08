@@ -2,24 +2,27 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  LayoutDashboard,
-  Package,
-  CalendarDays,
-  ClipboardCheck,
-  BarChart3,
-  LogOut,
-} from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/auth.store';
 import { authApi } from '@/lib/api';
+import { LogoMark } from '@/components/brand/logo';
+import { RoleBadge } from '@/components/ui/status-badge';
 
-const navItems = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Visão Geral' },
-  { href: '/dashboard/materials', icon: Package, label: 'Materiais' },
-  { href: '/dashboard/events', icon: CalendarDays, label: 'Eventos' },
-  { href: '/dashboard/checklist', icon: ClipboardCheck, label: 'Checklist' },
-  { href: '/dashboard/reports', icon: BarChart3, label: 'Relatórios' },
+const navSections = [
+  {
+    label: 'Operação',
+    items: [
+      { href: '/dashboard', label: 'Visão Geral', exact: true },
+      { href: '/dashboard/materials', label: 'Materiais' },
+      { href: '/dashboard/events', label: 'Eventos' },
+      { href: '/dashboard/checklist', label: 'Checklist' },
+    ],
+  },
+  {
+    label: 'Insights',
+    items: [{ href: '/dashboard/reports', label: 'Relatórios' }],
+  },
 ];
 
 export function Sidebar() {
@@ -27,58 +30,99 @@ export function Sidebar() {
   const { user, logout } = useAuthStore();
 
   async function handleLogout() {
-    try { await authApi.logout(); } catch { /* ignora */ }
+    try {
+      await authApi.logout();
+    } catch {
+      /* ignora */
+    }
     logout();
     window.location.href = '/login';
   }
 
   return (
-    <aside className="hidden md:flex flex-col w-60 bg-white border-r border-gray-200 min-h-screen">
-      {/* Logo */}
-      <div className="px-6 py-5 border-b border-gray-100">
-        <span className="text-xl font-bold text-blue-600">EventGear</span>
+    <aside
+      className={cn(
+        'hidden md:flex flex-col w-60 shrink-0',
+        'bg-dark-950 border-r border-dark-border',
+        'sticky top-0 h-screen',
+      )}
+      aria-label="Navegação principal"
+    >
+      {/* Brand */}
+      <div className="flex items-center gap-2.5 px-4 py-6 border-b border-dark-border">
+        <LogoMark size={26} />
+        <span className="font-display text-xl font-extrabold tracking-wide text-text-primary leading-none">
+          Event<span className="text-amber-500">Gear</span>
+        </span>
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-0.5" aria-label="Menu principal">
-        {navItems.map(({ href, icon: Icon, label }) => {
-          const active = href === '/dashboard'
-            ? pathname === '/dashboard'
-            : pathname.startsWith(href);
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                active
-                  ? 'bg-blue-50 text-blue-700'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
-              )}
-            >
-              <Icon size={18} />
-              {label}
-            </Link>
-          );
-        })}
+      {/* Nav sections */}
+      <nav className="flex-1 px-3 py-4 overflow-y-auto">
+        {navSections.map((section) => (
+          <div key={section.label} className="mb-4">
+            <span className="block font-mono text-[9px] uppercase tracking-[2px] text-text-muted px-2 pt-3 pb-2">
+              {section.label}
+            </span>
+            <ul className="space-y-0.5">
+              {section.items.map(({ href, label, exact }) => {
+                const active = exact
+                  ? pathname === href
+                  : pathname === href || pathname.startsWith(href + '/');
+                return (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      className={cn(
+                        'flex items-center gap-2 px-2.5 py-2 rounded-md',
+                        'font-semi text-[13px] font-medium',
+                        'transition-colors',
+                        active
+                          ? 'bg-amber-500/12 text-amber-400'
+                          : 'text-text-secondary hover:bg-dark-800 hover:text-text-primary',
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          'w-1.5 h-1.5 rounded-full bg-current shrink-0',
+                          active ? 'opacity-100' : 'opacity-60',
+                        )}
+                      />
+                      {label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
       </nav>
 
-      {/* User */}
-      <div className="px-4 py-4 border-t border-gray-100">
-        <div className="mb-2 px-2">
-          <p className="text-sm font-medium text-gray-900 truncate">{user?.name}</p>
-          <p className="text-xs text-gray-500 truncate">{user?.email}</p>
-          <span className="mt-1 inline-block text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-            {user?.role === 'ADMIN' ? 'Admin' : 'Operador'}
-          </span>
+      {/* User footer */}
+      <div className="px-4 py-4 border-t border-dark-border">
+        <div className="mb-3">
+          <p className="text-sm font-medium text-text-primary truncate">
+            {user?.name ?? '—'}
+          </p>
+          <p className="text-xs text-text-muted truncate mb-2">{user?.email}</p>
+          <RoleBadge role={user?.role} />
         </div>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          className={cn(
+            'flex items-center gap-2 w-full px-2.5 py-2 rounded-md',
+            'font-semi text-[13px] font-medium',
+            'text-text-secondary hover:bg-status-lost/10 hover:text-status-lost',
+            'transition-colors',
+          )}
         >
-          <LogOut size={16} />
+          <LogOut size={14} />
           Sair
         </button>
+        <p className="font-mono text-[9px] tracking-[1px] text-text-muted mt-3 leading-tight">
+          SCANTELBURYDEVS
+          <br />
+          v1.0 · 2026
+        </p>
       </div>
     </aside>
   );

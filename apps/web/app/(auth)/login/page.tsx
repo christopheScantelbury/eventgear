@@ -12,6 +12,7 @@ import { getErrorMessage } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { Button } from '@/components/ui/button';
 
 const schema = z.object({
   email: z.string().email('E-mail inválido'),
@@ -25,17 +26,17 @@ export default function LoginPage() {
   const setAuth = useAuthStore((s) => s.setAuth);
   const [error, setError] = useState('');
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   async function onSubmit(data: FormData) {
     setError('');
     try {
       const res = await authApi.login(data);
-      // Injeta token antes de chamar /me para que o header Authorization seja enviado
       setTokens(res.accessToken, res.refreshToken);
-      // Busca dados do usuário autenticado
       const me = await authApi.me();
       setAuth(
         { id: me.id, name: me.name, email: me.email, role: me.role, companyId: me.companyId },
@@ -51,10 +52,18 @@ export default function LoginPage() {
 
   return (
     <>
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">Entrar na sua conta</h2>
+      <h2 className="font-display text-xl font-bold tracking-wide text-text-primary mb-1">
+        Entrar na sua conta
+      </h2>
+      <p className="text-sm text-text-secondary mb-6">
+        Acesso restrito a operadores autorizados.
+      </p>
 
       {error && (
-        <div role="alert" className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        <div
+          role="alert"
+          className="mb-4 rounded-lg border border-status-lost/30 border-l-[3px] border-l-status-lost bg-status-lost/10 px-4 py-3 text-sm text-red-200"
+        >
           {error}
         </div>
       )}
@@ -67,10 +76,13 @@ export default function LoginPage() {
             type="email"
             autoComplete="email"
             placeholder="voce@empresa.com"
+            state={errors.email ? 'error' : 'default'}
             {...register('email')}
             aria-invalid={!!errors.email}
           />
-          {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
+          {errors.email && (
+            <p className="mt-1 text-xs text-status-lost">{errors.email.message}</p>
+          )}
         </div>
 
         <div>
@@ -80,25 +92,24 @@ export default function LoginPage() {
             type="password"
             autoComplete="current-password"
             placeholder="••••••••"
+            state={errors.password ? 'error' : 'default'}
             {...register('password')}
             aria-invalid={!!errors.password}
           />
-          {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
+          {errors.password && (
+            <p className="mt-1 text-xs text-status-lost">{errors.password.message}</p>
+          )}
         </div>
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full flex items-center justify-center gap-2 h-11 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 disabled:opacity-60 transition-colors"
-        >
-          {isSubmitting && <Spinner className="w-4 h-4" />}
+        <Button type="submit" disabled={isSubmitting} block size="md">
+          {isSubmitting && <Spinner className="w-4 h-4 text-dark-900" />}
           Entrar
-        </button>
+        </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-gray-500">
+      <p className="mt-6 text-center text-sm text-text-secondary">
         Não tem conta?{' '}
-        <Link href="/register" className="text-blue-600 font-medium hover:underline">
+        <Link href="/register" className="text-amber-400 font-medium hover:text-amber-300">
           Criar empresa
         </Link>
       </p>

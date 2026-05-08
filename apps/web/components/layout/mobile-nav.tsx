@@ -6,7 +6,7 @@ import { LayoutDashboard, Package, CalendarDays, ClipboardCheck, BarChart3 } fro
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Início' },
+  { href: '/dashboard', icon: LayoutDashboard, label: 'Início', exact: true },
   { href: '/dashboard/materials', icon: Package, label: 'Materiais' },
   { href: '/dashboard/events', icon: CalendarDays, label: 'Eventos' },
   { href: '/dashboard/checklist', icon: ClipboardCheck, label: 'Checklist' },
@@ -17,23 +17,33 @@ export function MobileNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 safe-area-bottom">
+    <nav
+      className={cn(
+        'md:hidden fixed bottom-0 left-0 right-0 z-40',
+        'bg-dark-950 border-t border-dark-border',
+        'safe-area-bottom',
+      )}
+      aria-label="Navegação inferior"
+    >
       <div className="flex">
-        {navItems.map(({ href, icon: Icon, label }) => {
-          const active = href === '/dashboard'
-            ? pathname === '/dashboard'
-            : pathname.startsWith(href);
+        {navItems.map(({ href, icon: Icon, label, exact }) => {
+          const active = exact
+            ? pathname === href
+            : pathname === href || pathname.startsWith(href + '/');
           return (
             <Link
               key={href}
               href={href}
               className={cn(
-                'flex-1 flex flex-col items-center justify-center gap-1 py-2 text-xs font-medium transition-colors',
-                active ? 'text-blue-600' : 'text-gray-500',
+                'touch-target flex-1 flex flex-col items-center justify-center gap-1 py-2',
+                'transition-colors',
+                active ? 'text-amber-400' : 'text-text-secondary hover:text-text-primary',
               )}
             >
               <Icon size={20} />
-              {label}
+              <span className="font-mono text-[9px] uppercase tracking-[1px]">
+                {label}
+              </span>
             </Link>
           );
         })}

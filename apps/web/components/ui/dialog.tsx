@@ -27,7 +27,7 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50"
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -37,18 +37,22 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
         aria-modal="true"
         aria-labelledby="dialog-title"
         className={cn(
-          'relative z-10 w-full max-w-lg mx-4 bg-white rounded-xl shadow-xl',
+          'relative z-10 w-full max-w-lg mx-4',
+          'bg-dark-800 border border-dark-border rounded-xl shadow-2xl',
           'max-h-[90vh] overflow-y-auto',
           className,
         )}
       >
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 id="dialog-title" className="text-lg font-semibold text-gray-900">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-dark-border">
+          <h2
+            id="dialog-title"
+            className="font-display text-lg font-bold tracking-wide text-text-primary"
+          >
             {title}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors rounded-md p-1"
+            className="text-text-muted hover:text-text-primary transition-colors rounded-md p-1"
             aria-label="Fechar"
           >
             <X size={20} />

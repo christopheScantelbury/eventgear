@@ -3,29 +3,34 @@
 import { useParams } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, QrCode, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
+import {
+  ChevronLeft,
+  CheckCircle2,
+  AlertCircle,
+  RefreshCw,
+  Check,
+  Clock,
+  X as XIcon,
+  AlertTriangle,
+} from 'lucide-react';
 import Link from 'next/link';
 import { checklistApi, eventsApi } from '@/lib/api';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
+import { Button } from '@/components/ui/button';
+import { BtnQr } from '@/components/ui/btn-qr';
+import { ChecklistItemBadge } from '@/components/ui/status-badge';
 import { useToast } from '@/components/ui/toast';
-import { getErrorMessage } from '@/lib/utils';
+import { getErrorMessage, cn } from '@/lib/utils';
 
 const TYPE_LABEL = { departure: 'Saída', return: 'Retorno' } as const;
 const TYPE_API = { departure: 'DEPARTURE', return: 'RETURN' } as const;
 
-const ITEM_STATUS_VARIANT: Record<string, any> = {
-  PENDING: 'secondary',
-  CONFIRMED: 'success',
-  MISSING: 'destructive',
-  DAMAGED: 'warning',
-};
-const ITEM_STATUS_LABEL: Record<string, string> = {
-  PENDING: 'Pendente',
-  CONFIRMED: 'Confirmado',
-  MISSING: 'Ausente',
-  DAMAGED: 'Avariado',
+const ITEM_ICON_MAP: Record<string, { icon: typeof Check; bg: string; color: string }> = {
+  CONFIRMED: { icon: Check, bg: 'bg-status-available/12', color: 'text-status-available' },
+  PENDING: { icon: Clock, bg: 'bg-dark-700', color: 'text-text-muted' },
+  MISSING: { icon: XIcon, bg: 'bg-status-lost/12', color: 'text-status-lost' },
+  DAMAGED: { icon: AlertTriangle, bg: 'bg-status-allocated/12', color: 'text-status-allocated' },
 };
 
 function QrScanner({ onScan }: { onScan: (code: string) => void }) {
@@ -68,7 +73,6 @@ export default function ChecklistPage() {
   const { toast } = useToast();
   const apiType = TYPE_API[type] ?? 'DEPARTURE';
   const [scanMode, setScanMode] = useState(false);
-  const [generated, setGenerated] = useState(false);
 
   const { data: event } = useQuery({
     queryKey: ['events', eventId],
@@ -83,7 +87,6 @@ export default function ChecklistPage() {
   const { mutate: generate, isPending: generating } = useMutation({
     mutationFn: () => checklistApi.generate(eventId, apiType),
     onSuccess: () => {
-      setGenerated(true);
       refetch();
       toast('Checklist gerado!', 'success');
     },
@@ -94,7 +97,7 @@ export default function ChecklistPage() {
     mutationFn: (qrCode: string) => checklistApi.scan({ qrCode, eventId, type: apiType }),
     onSuccess: (result) => {
       qc.invalidateQueries({ queryKey: ['checklist', eventId, type] });
-      toast(`✓ ${result.material?.name ?? 'Item'} confirmado!`, 'success');
+      toast(`${result.material?.name ?? 'Item'} confirmado`, 'success');
       setScanMode(false);
     },
     onError: (e) => toast(getErrorMessage(e), 'error'),
@@ -106,39 +109,53 @@ export default function ChecklistPage() {
   const progress = total > 0 ? Math.round((confirmed / total) * 100) : 0;
 
   return (
-    <div className="px-4 sm:px-6 py-6 max-w-2xl mx-auto">
+    <div className="px-4 sm:px-6 py-8 max-w-2xl mx-auto">
       <Link
         href={`/dashboard/events/${eventId}`}
-        className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4"
+        className="inline-flex items-center gap-1 text-sm text-text-secondary hover:text-text-primary mb-4 transition-colors"
       >
         <ChevronLeft size={16} /> {event?.name ?? 'Evento'}
       </Link>
 
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Checklist de {TYPE_LABEL[type] ?? type}
-        </h1>
-        <button onClick={() => refetch()} className="text-gray-400 hover:text-gray-600 p-1">
+      <div className="flex items-center justify-between mb-4 gap-3">
+        <div>
+          <p className="font-mono text-[10px] uppercase tracking-[2px] text-amber-600 mb-1">
+            Checklist · {TYPE_LABEL[type] ?? type}
+          </p>
+          <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-text-primary">
+            {TYPE_LABEL[type] ?? type}
+          </h1>
+        </div>
+        <button
+          onClick={() => refetch()}
+          className="text-text-muted hover:text-text-primary p-2 rounded-md hover:bg-dark-800 transition-colors"
+          aria-label="Recarregar"
+        >
           <RefreshCw size={16} />
         </button>
       </div>
 
       {/* Progress */}
       {total > 0 && (
-        <div className="bg-white border border-gray-200 rounded-xl p-4 mb-4">
-          <div className="flex justify-between text-sm mb-2">
-            <span className="text-gray-600 font-medium">{confirmed} de {total} confirmados</span>
-            <span className="font-bold text-blue-600">{progress}%</span>
+        <div className="bg-dark-800 border border-dark-border rounded-xl p-4 mb-4">
+          <div className="flex justify-between items-baseline mb-3">
+            <span className="font-mono text-[11px] uppercase tracking-[1.5px] text-text-muted">
+              <span className="text-text-primary font-medium">{confirmed}</span> de{' '}
+              <span className="text-text-primary font-medium">{total}</span> confirmados
+            </span>
+            <span className="font-display text-2xl font-extrabold text-amber-500 leading-none">
+              {progress}%
+            </span>
           </div>
-          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+          <div className="h-2 bg-dark-950 rounded-full overflow-hidden">
             <div
-              className="h-full bg-blue-500 rounded-full transition-all"
+              className="h-full bg-amber-500 rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
           {progress === 100 && (
-            <p className="mt-2 text-sm text-green-600 font-medium flex items-center gap-1">
-              <CheckCircle2 size={14} /> Checklist completo!
+            <p className="mt-3 text-sm text-status-available font-medium flex items-center gap-1.5">
+              <CheckCircle2 size={14} /> Checklist completo
             </p>
           )}
         </div>
@@ -146,39 +163,41 @@ export default function ChecklistPage() {
 
       {isLoading ? (
         <div className="space-y-2">
-          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16 rounded-xl" />)}
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-16 rounded-xl" />
+          ))}
         </div>
       ) : total === 0 ? (
-        <div className="bg-white border border-gray-200 rounded-xl p-8 text-center">
-          <AlertCircle size={36} className="mx-auto mb-3 text-gray-300" />
-          <p className="font-medium text-gray-700 mb-1">Checklist não gerado</p>
-          <p className="text-sm text-gray-500 mb-4">Gere o checklist para listar os materiais</p>
-          <button
-            onClick={() => generate()}
-            disabled={generating}
-            className="flex items-center gap-2 mx-auto px-5 h-11 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-60 transition-colors"
-          >
-            {generating && <Spinner className="w-4 h-4" />}
+        <div className="bg-dark-800 border border-dark-border rounded-xl p-8 text-center">
+          <AlertCircle size={36} className="mx-auto mb-3 text-text-muted" />
+          <p className="font-display font-bold text-lg tracking-wide text-text-primary mb-1">
+            Checklist não gerado
+          </p>
+          <p className="text-sm text-text-secondary mb-5">
+            Gere o checklist para listar os materiais alocados.
+          </p>
+          <Button onClick={() => generate()} disabled={generating} className="mx-auto">
+            {generating && <Spinner className="w-4 h-4 text-dark-900" />}
             Gerar checklist
-          </button>
+          </Button>
         </div>
       ) : (
         <>
-          {/* Scanner button */}
-          <button
+          {/* Scanner toggle */}
+          <BtnQr
             onClick={() => setScanMode(!scanMode)}
-            className="w-full flex items-center justify-center gap-2 h-11 mb-4 border-2 border-dashed border-blue-300 text-blue-600 font-medium text-sm rounded-xl hover:bg-blue-50 transition-colors"
+            className="w-full mb-4"
+            label={scanMode ? 'Fechar scanner' : 'Escanear QR Code'}
           >
-            <QrCode size={18} />
             {scanMode ? 'Fechar scanner' : 'Escanear QR Code'}
-          </button>
+          </BtnQr>
 
           {/* QR scanner inline */}
           {scanMode && (
-            <div className="mb-4 bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="mb-4 bg-dark-950 border border-dark-border rounded-xl overflow-hidden p-4">
               {scanning ? (
                 <div className="flex items-center justify-center h-40">
-                  <Spinner className="w-8 h-8 text-blue-500" />
+                  <Spinner className="w-8 h-8 text-amber-500" />
                 </div>
               ) : (
                 <QrScanner onScan={(code) => scan(code)} />
@@ -188,25 +207,37 @@ export default function ChecklistPage() {
 
           {/* Items list */}
           <div className="space-y-2">
-            {allItems.map((item: any) => (
-              <div
-                key={item.id}
-                className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3"
-              >
-                <div className={`w-2 h-2 rounded-full shrink-0 ${item.status === 'CONFIRMED' ? 'bg-green-500' : 'bg-gray-300'}`} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
-                    {item.eventMaterial?.material?.name ?? 'Material'}
-                  </p>
-                  <p className="text-xs text-gray-500 font-mono">
-                    {item.eventMaterial?.material?.qrCode}
-                  </p>
+            {allItems.map((item: any) => {
+              const cfg = ITEM_ICON_MAP[item.status] ?? ITEM_ICON_MAP.PENDING;
+              const Icon = cfg.icon;
+              return (
+                <div
+                  key={item.id}
+                  className={cn(
+                    'min-h-12 flex items-center gap-3 bg-dark-800 border border-dark-border rounded-lg px-4 py-3',
+                    'transition-colors',
+                  )}
+                >
+                  <div
+                    className={cn(
+                      'w-9 h-9 rounded-md flex items-center justify-center shrink-0',
+                      cfg.bg,
+                    )}
+                  >
+                    <Icon size={16} className={cfg.color} aria-hidden="true" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semi font-semibold text-sm text-text-primary truncate">
+                      {item.eventMaterial?.material?.name ?? 'Material'}
+                    </p>
+                    <p className="font-mono text-[11px] text-text-muted mt-0.5 truncate">
+                      {item.eventMaterial?.material?.qrCode}
+                    </p>
+                  </div>
+                  <ChecklistItemBadge status={item.status} />
                 </div>
-                <Badge variant={ITEM_STATUS_VARIANT[item.status] ?? 'secondary'}>
-                  {ITEM_STATUS_LABEL[item.status] ?? item.status}
-                </Badge>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </>
       )}

@@ -3,16 +3,51 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const badgeVariants = cva(
-  'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold',
+  [
+    'inline-flex items-center gap-1.5',
+    'font-mono text-[11px] font-medium',
+    'px-2.5 py-1 rounded-xs',
+    'uppercase tracking-wider',
+    'border',
+    "before:content-['●'] before:text-[8px]",
+  ].join(' '),
   {
     variants: {
       variant: {
-        default: 'bg-blue-100 text-blue-800',
-        success: 'bg-green-100 text-green-800',
-        warning: 'bg-yellow-100 text-yellow-800',
-        destructive: 'bg-red-100 text-red-800',
-        secondary: 'bg-gray-100 text-gray-700',
-        purple: 'bg-purple-100 text-purple-800',
+        // Material status (semantic — never reuse colors)
+        available:
+          'bg-status-available/12 text-status-available border-status-available/25',
+        allocated:
+          'bg-status-allocated/12 text-status-allocated border-status-allocated/25',
+        maintenance:
+          'bg-status-maintenance/12 text-status-maintenance border-status-maintenance/25',
+        lost: 'bg-status-lost/12 text-status-lost border-status-lost/25',
+
+        // Event status
+        planned: 'bg-dark-700 text-text-secondary border-dark-border-med',
+        'in-progress':
+          'bg-amber-500/12 text-amber-400 border-amber-500/25',
+        completed:
+          'bg-status-available/12 text-status-available border-status-available/25',
+        cancelled: 'bg-dark-700 text-text-muted border-dark-border-med',
+
+        // Roles
+        admin: 'bg-amber-500/8 text-amber-400 border-amber-500/20',
+        operator: 'bg-dark-700 text-text-secondary border-dark-border-med',
+
+        // Generic / legacy aliases (kept for backwards compat)
+        default: 'bg-amber-500/12 text-amber-400 border-amber-500/25',
+        success:
+          'bg-status-available/12 text-status-available border-status-available/25',
+        warning:
+          'bg-status-allocated/12 text-status-allocated border-status-allocated/25',
+        destructive:
+          'bg-status-lost/12 text-status-lost border-status-lost/25',
+        secondary: 'bg-dark-700 text-text-secondary border-dark-border-med',
+        purple:
+          'bg-status-maintenance/12 text-status-maintenance border-status-maintenance/25',
+        event:
+          'bg-purple-500/12 text-purple-300 border-purple-500/20',
       },
     },
     defaultVariants: { variant: 'default' },
@@ -26,3 +61,5 @@ export interface BadgeProps
 export function Badge({ className, variant, ...props }: BadgeProps) {
   return <span className={cn(badgeVariants({ variant }), className)} {...props} />;
 }
+
+export { badgeVariants };

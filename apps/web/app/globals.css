@@ -4,26 +4,103 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --border: 214.3 31.8% 91.4%;
+    /* Brand âmbar */
+    --amber-300: #FCD34D;
+    --amber-400: #FBBF24;
+    --amber-500: #F59E0B;
+    --amber-600: #D97706;
+    --amber-700: #B45309;
+    --amber-900: #451A03;
+
+    /* Dark surfaces */
+    --dark-950: #060A12;
+    --dark-900: #0C1220;
+    --dark-800: #111C2E;
+    --dark-700: #17253C;
+    --dark-600: #1E304D;
+    --dark-500: #2A4166;
+    --dark-border: rgba(255, 255, 255, 0.07);
+    --dark-border-med: rgba(255, 255, 255, 0.12);
+
+    /* Status */
+    --status-available: #22C55E;
+    --status-allocated: #F59E0B;
+    --status-maintenance: #60A5FA;
+    --status-lost: #F87171;
+
+    /* Text */
+    --text-primary: #F1F5F9;
+    --text-secondary: #94A3B8;
+    --text-muted: #475569;
+    --text-on-light: #0F172A;
+
+    /* shadcn token aliases (mapped to dark theme) */
+    --background: 222 47% 8%;
+    --foreground: 210 40% 96%;
+    --card: 220 35% 12%;
+    --card-foreground: 210 40% 96%;
+    --primary: 38 92% 50%;
+    --primary-foreground: 222 47% 8%;
+    --secondary: 218 32% 17%;
+    --secondary-foreground: 210 40% 96%;
+    --muted: 218 32% 17%;
+    --muted-foreground: 215 20% 65%;
+    --border: 218 32% 17%;
     --radius: 0.5rem;
   }
 
-  * { @apply border-gray-200; }
-  body { @apply bg-white text-gray-900; }
+  * {
+    @apply border-dark-border;
+    box-sizing: border-box;
+  }
 
-  /* Mobile-first: toque mínimo 44px */
-  button, a, [role="button"] {
+  html {
+    background-color: #0C1220;
+  }
+
+  body {
+    background-color: #0C1220;
+    color: #F1F5F9;
+    font-family: var(--font-body), 'Barlow', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Touch targets — only on actionable nav/buttons that opt-in via .touch-target */
+  .touch-target {
     min-height: 44px;
     min-width: 44px;
   }
+
+  /* Scrollbar dark */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0C1220;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #17253C;
+    border-radius: 6px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #1E304D;
+  }
+}
+
+/* QR Scanner override (html5-qrcode injects its own DOM) */
+#qr-reader {
+  border: none !important;
+}
+#qr-reader__dashboard_section_csr button {
+  background-color: #F59E0B !important;
+  color: #0C1220 !important;
+  border: none !important;
+  font-family: var(--font-semi), 'Barlow Semi Condensed', sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px;
+}
+#qr-reader__scan_region {
+  background: #060A12 !important;
 }

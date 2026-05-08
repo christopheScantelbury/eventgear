@@ -12,17 +12,20 @@ import { getErrorMessage } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { Button } from '@/components/ui/button';
 
-const schema = z.object({
-  companyName: z.string().min(2, 'Nome da empresa obrigatório'),
-  name: z.string().min(2, 'Seu nome obrigatório'),
-  email: z.string().email('E-mail inválido'),
-  password: z.string().min(8, 'Mínimo 8 caracteres'),
-  confirmPassword: z.string(),
-}).refine((d) => d.password === d.confirmPassword, {
-  message: 'Senhas não coincidem',
-  path: ['confirmPassword'],
-});
+const schema = z
+  .object({
+    companyName: z.string().min(2, 'Nome da empresa obrigatório'),
+    name: z.string().min(2, 'Seu nome obrigatório'),
+    email: z.string().email('E-mail inválido'),
+    password: z.string().min(8, 'Mínimo 8 caracteres'),
+    confirmPassword: z.string(),
+  })
+  .refine((d) => d.password === d.confirmPassword, {
+    message: 'Senhas não coincidem',
+    path: ['confirmPassword'],
+  });
 type FormData = z.infer<typeof schema>;
 
 export default function RegisterPage() {
@@ -30,9 +33,11 @@ export default function RegisterPage() {
   const setAuth = useAuthStore((s) => s.setAuth);
   const [error, setError] = useState('');
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   async function onSubmit({ confirmPassword: _, ...data }: FormData) {
     setError('');
@@ -52,10 +57,18 @@ export default function RegisterPage() {
 
   return (
     <>
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">Criar conta de empresa</h2>
+      <h2 className="font-display text-xl font-bold tracking-wide text-text-primary mb-1">
+        Criar conta de empresa
+      </h2>
+      <p className="text-sm text-text-secondary mb-6">
+        Cadastre sua operação para começar.
+      </p>
 
       {error && (
-        <div role="alert" className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        <div
+          role="alert"
+          className="mb-4 rounded-lg border border-status-lost/30 border-l-[3px] border-l-status-lost bg-status-lost/10 px-4 py-3 text-sm text-red-200"
+        >
           {error}
         </div>
       )}
@@ -63,47 +76,84 @@ export default function RegisterPage() {
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
         <div>
           <Label htmlFor="companyName">Nome da empresa</Label>
-          <Input id="companyName" placeholder="Sonorização XYZ" {...register('companyName')} />
-          {errors.companyName && <p className="mt-1 text-xs text-red-600">{errors.companyName.message}</p>}
+          <Input
+            id="companyName"
+            placeholder="Sonorização XYZ"
+            state={errors.companyName ? 'error' : 'default'}
+            {...register('companyName')}
+          />
+          {errors.companyName && (
+            <p className="mt-1 text-xs text-status-lost">{errors.companyName.message}</p>
+          )}
         </div>
 
         <div>
           <Label htmlFor="name">Seu nome</Label>
-          <Input id="name" placeholder="João Silva" {...register('name')} />
-          {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name.message}</p>}
+          <Input
+            id="name"
+            placeholder="João Silva"
+            state={errors.name ? 'error' : 'default'}
+            {...register('name')}
+          />
+          {errors.name && (
+            <p className="mt-1 text-xs text-status-lost">{errors.name.message}</p>
+          )}
         </div>
 
         <div>
           <Label htmlFor="email">E-mail</Label>
-          <Input id="email" type="email" autoComplete="email" placeholder="voce@empresa.com" {...register('email')} />
-          {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
+          <Input
+            id="email"
+            type="email"
+            autoComplete="email"
+            placeholder="voce@empresa.com"
+            state={errors.email ? 'error' : 'default'}
+            {...register('email')}
+          />
+          {errors.email && (
+            <p className="mt-1 text-xs text-status-lost">{errors.email.message}</p>
+          )}
         </div>
 
         <div>
           <Label htmlFor="password">Senha</Label>
-          <Input id="password" type="password" autoComplete="new-password" placeholder="Mínimo 8 caracteres" {...register('password')} />
-          {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
+          <Input
+            id="password"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Mínimo 8 caracteres"
+            state={errors.password ? 'error' : 'default'}
+            {...register('password')}
+          />
+          {errors.password && (
+            <p className="mt-1 text-xs text-status-lost">{errors.password.message}</p>
+          )}
         </div>
 
         <div>
           <Label htmlFor="confirmPassword">Confirmar senha</Label>
-          <Input id="confirmPassword" type="password" autoComplete="new-password" placeholder="••••••••" {...register('confirmPassword')} />
-          {errors.confirmPassword && <p className="mt-1 text-xs text-red-600">{errors.confirmPassword.message}</p>}
+          <Input
+            id="confirmPassword"
+            type="password"
+            autoComplete="new-password"
+            placeholder="••••••••"
+            state={errors.confirmPassword ? 'error' : 'default'}
+            {...register('confirmPassword')}
+          />
+          {errors.confirmPassword && (
+            <p className="mt-1 text-xs text-status-lost">{errors.confirmPassword.message}</p>
+          )}
         </div>
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full flex items-center justify-center gap-2 h-11 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 disabled:opacity-60 transition-colors"
-        >
-          {isSubmitting && <Spinner className="w-4 h-4" />}
+        <Button type="submit" disabled={isSubmitting} block size="md">
+          {isSubmitting && <Spinner className="w-4 h-4 text-dark-900" />}
           Criar conta
-        </button>
+        </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-gray-500">
+      <p className="mt-6 text-center text-sm text-text-secondary">
         Já tem conta?{' '}
-        <Link href="/login" className="text-blue-600 font-medium hover:underline">
+        <Link href="/login" className="text-amber-400 font-medium hover:text-amber-300">
           Entrar
         </Link>
       </p>

@@ -7,19 +7,16 @@ import { ChevronLeft, Plus, Trash2, ClipboardCheck, Package } from 'lucide-react
 import Link from 'next/link';
 import { eventsApi, materialsApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
-import { Badge } from '@/components/ui/badge';
 import { Dialog } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
 import { Select } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { EventStatusBadge } from '@/components/ui/status-badge';
 import { useToast } from '@/components/ui/toast';
-import { formatDate, getErrorMessage, STATUS_LABELS } from '@/lib/utils';
-
-const STATUS_VARIANT: Record<string, any> = {
-  PLANNED: 'default', IN_PROGRESS: 'warning', COMPLETED: 'success', CANCELLED: 'secondary',
-};
+import { formatDate, getErrorMessage } from '@/lib/utils';
 
 export default function EventDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -75,7 +72,7 @@ export default function EventDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="px-4 sm:px-6 py-6 max-w-3xl mx-auto space-y-4">
+      <div className="px-4 sm:px-6 py-8 max-w-3xl mx-auto space-y-4">
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-40 rounded-xl" />
         <Skeleton className="h-64 rounded-xl" />
@@ -88,75 +85,105 @@ export default function EventDetailPage() {
   const canChecklist = event.status === 'PLANNED' || event.status === 'IN_PROGRESS';
 
   return (
-    <div className="px-4 sm:px-6 py-6 max-w-3xl mx-auto">
-      <Link href="/dashboard/events" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4">
+    <div className="px-4 sm:px-6 py-8 max-w-3xl mx-auto">
+      <Link
+        href="/dashboard/events"
+        className="inline-flex items-center gap-1 text-sm text-text-secondary hover:text-text-primary mb-4 transition-colors"
+      >
         <ChevronLeft size={16} /> Eventos
       </Link>
 
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{event.name}</h1>
-          {event.client && <p className="text-sm text-gray-500 mt-0.5">Cliente: {event.client}</p>}
+      <div className="flex items-start justify-between mb-4 gap-3">
+        <div className="min-w-0">
+          <h1 className="font-display text-3xl font-extrabold tracking-tight text-text-primary truncate">
+            {event.name}
+          </h1>
+          {event.client && (
+            <p className="text-sm text-text-secondary mt-1">Cliente: {event.client}</p>
+          )}
         </div>
-        <Badge variant={STATUS_VARIANT[event.status]}>{STATUS_LABELS[event.status as keyof typeof STATUS_LABELS]}</Badge>
+        <EventStatusBadge status={event.status} />
       </div>
 
       {/* Info */}
-      <div className="bg-white border border-gray-200 rounded-xl p-5 mb-4 grid sm:grid-cols-2 gap-3 text-sm">
+      <div className="bg-dark-800 border border-dark-border rounded-xl p-5 mb-4 grid sm:grid-cols-2 gap-x-6 gap-y-4">
         <div>
-          <span className="text-gray-500">Início</span>
-          <p className="font-medium">{formatDate(event.startDate)}</p>
+          <p className="font-mono text-[10px] uppercase tracking-[1.5px] text-text-muted">
+            Início
+          </p>
+          <p className="font-mono text-sm text-text-primary mt-1">
+            {formatDate(event.startDate)}
+          </p>
         </div>
         <div>
-          <span className="text-gray-500">Retorno</span>
-          <p className="font-medium">{formatDate(event.returnDate)}</p>
+          <p className="font-mono text-[10px] uppercase tracking-[1.5px] text-text-muted">
+            Retorno
+          </p>
+          <p className="font-mono text-sm text-text-primary mt-1">
+            {formatDate(event.returnDate)}
+          </p>
         </div>
         {event.location && (
           <div>
-            <span className="text-gray-500">Local</span>
-            <p className="font-medium">{event.location}</p>
+            <p className="font-mono text-[10px] uppercase tracking-[1.5px] text-text-muted">
+              Local
+            </p>
+            <p className="text-sm font-medium text-text-primary mt-1">{event.location}</p>
           </div>
         )}
         {event.notes && (
           <div className="sm:col-span-2">
-            <span className="text-gray-500">Observações</span>
-            <p className="text-gray-700 bg-gray-50 rounded-lg p-2 mt-1">{event.notes}</p>
+            <p className="font-mono text-[10px] uppercase tracking-[1.5px] text-text-muted">
+              Observações
+            </p>
+            <p className="text-sm text-text-secondary bg-dark-900 border border-dark-border rounded-md p-3 mt-1">
+              {event.notes}
+            </p>
           </div>
         )}
       </div>
 
       {/* Materiais alocados */}
-      <div className="bg-white border border-gray-200 rounded-xl p-5 mb-4">
+      <div className="bg-dark-800 border border-dark-border rounded-xl p-5 mb-4">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-gray-900">Materiais alocados</h2>
+          <h2 className="font-display font-bold text-lg tracking-wide text-text-primary">
+            Materiais alocados
+          </h2>
           {canEdit && (
-            <button
-              onClick={() => setAddOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
+            <Button onClick={() => setAddOpen(true)} size="sm">
               <Plus size={14} /> Adicionar
-            </button>
+            </Button>
           )}
         </div>
 
         {event.materials?.length === 0 ? (
-          <div className="text-center py-8 text-gray-400">
-            <Package size={32} className="mx-auto mb-2 opacity-40" />
+          <div className="text-center py-8 text-text-muted">
+            <Package size={32} className="mx-auto mb-2 opacity-50" />
             <p className="text-sm">Nenhum material alocado</p>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-1">
             {event.materials?.map((em: any) => (
-              <div key={em.id} className="flex items-center gap-3 py-2 border-b border-gray-100 last:border-0">
+              <div
+                key={em.id}
+                className="flex items-center gap-3 py-3 border-b border-dark-border last:border-0"
+              >
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">{em.material.name}</p>
-                  <p className="text-xs text-gray-500">{em.material.category} · {em.material.qrCode}</p>
+                  <p className="font-semi font-semibold text-sm text-text-primary truncate">
+                    {em.material.name}
+                  </p>
+                  <p className="text-xs text-text-muted mt-0.5">
+                    {em.material.category} ·{' '}
+                    <span className="font-mono">{em.material.qrCode}</span>
+                  </p>
                 </div>
-                <span className="text-sm font-medium text-gray-700 shrink-0">{em.qtyAllocated} un.</span>
+                <span className="font-mono text-sm text-text-primary shrink-0 bg-dark-700 px-2 py-1 rounded-xs">
+                  {em.qtyAllocated} un.
+                </span>
                 {canEdit && (
                   <button
                     onClick={() => removeMaterial(em.material.id)}
-                    className="text-gray-400 hover:text-red-500 transition-colors shrink-0"
+                    className="text-text-muted hover:text-status-lost transition-colors shrink-0 p-1"
                     aria-label="Remover"
                   >
                     <Trash2 size={14} />
@@ -171,48 +198,54 @@ export default function EventDetailPage() {
       {/* Ações */}
       {canChecklist && (
         <div className="flex gap-3 mb-4">
-          <Link
-            href={`/dashboard/checklist/${id}/departure`}
-            className="flex-1 flex items-center justify-center gap-2 h-11 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <ClipboardCheck size={16} />
-            Checklist Saída
+          <Link href={`/dashboard/checklist/${id}/departure`} className="flex-1">
+            <Button block size="lg" variant="primary">
+              <ClipboardCheck size={16} />
+              Checklist Saída
+            </Button>
           </Link>
           {event.status === 'IN_PROGRESS' && (
-            <Link
-              href={`/dashboard/checklist/${id}/return`}
-              className="flex-1 flex items-center justify-center gap-2 h-11 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
-            >
-              <ClipboardCheck size={16} />
-              Checklist Retorno
+            <Link href={`/dashboard/checklist/${id}/return`} className="flex-1">
+              <Button block size="lg" variant="success">
+                <ClipboardCheck size={16} />
+                Checklist Retorno
+              </Button>
             </Link>
           )}
         </div>
       )}
 
       {canEdit && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center justify-between">
-          <p className="text-sm font-medium text-red-800">Cancelar evento</p>
-          <button
-            onClick={() => { if (confirm('Cancelar este evento?')) cancelEvent(); }}
+        <div className="bg-status-lost/8 border border-status-lost/25 rounded-xl p-4 flex items-center justify-between gap-3">
+          <p className="font-semi font-semibold text-status-lost">Cancelar evento</p>
+          <Button
+            variant="danger"
+            onClick={() => {
+              if (confirm('Cancelar este evento?')) cancelEvent();
+            }}
             disabled={cancelling}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 disabled:opacity-60 transition-colors"
           >
-            {cancelling && <Spinner className="w-3 h-3" />}
+            {cancelling && <Spinner className="w-3 h-3 text-status-lost" />}
             Cancelar
-          </button>
+          </Button>
         </div>
       )}
 
       {/* Dialog adicionar material */}
-      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Adicionar material ao evento">
+      <Dialog
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        title="Adicionar material ao evento"
+      >
         <div className="space-y-4">
           <div>
             <Label>Material</Label>
             <Select value={materialId} onChange={(e) => setMaterialId(e.target.value)}>
               <option value="">Selecionar...</option>
               {materialsData?.items?.map((m: any) => (
-                <option key={m.id} value={m.id}>{m.name} (disponível: {m.totalQty})</option>
+                <option key={m.id} value={m.id}>
+                  {m.name} (disponível: {m.totalQty})
+                </option>
               ))}
             </Select>
           </div>
@@ -226,20 +259,13 @@ export default function EventDetailPage() {
             />
           </div>
           <div className="flex gap-3 pt-2">
-            <button
-              onClick={() => materialId && addMaterial()}
-              disabled={!materialId || adding}
-              className="flex items-center gap-2 h-11 px-5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-60 transition-colors"
-            >
-              {adding && <Spinner className="w-4 h-4" />}
+            <Button onClick={() => materialId && addMaterial()} disabled={!materialId || adding}>
+              {adding && <Spinner className="w-4 h-4 text-dark-900" />}
               Adicionar
-            </button>
-            <button
-              onClick={() => setAddOpen(false)}
-              className="h-11 px-5 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
+            </Button>
+            <Button variant="ghost" onClick={() => setAddOpen(false)}>
               Cancelar
-            </button>
+            </Button>
           </div>
         </div>
       </Dialog>

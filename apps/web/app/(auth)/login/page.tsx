@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { authApi } from '@/lib/api';
+import { authApi, setTokens } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
 import { getErrorMessage } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -33,6 +33,8 @@ export default function LoginPage() {
     setError('');
     try {
       const res = await authApi.login(data);
+      // Injeta token antes de chamar /me para que o header Authorization seja enviado
+      setTokens(res.accessToken, res.refreshToken);
       // Busca dados do usuário autenticado
       const me = await authApi.me();
       setAuth(

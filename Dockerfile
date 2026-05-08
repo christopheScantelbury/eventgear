@@ -12,8 +12,8 @@ COPY apps/api/package*.json ./apps/api/
 COPY packages/ ./packages/
 
 RUN npm ci --ignore-scripts
-RUN npm rebuild bcrypt --prefix apps/api || true
-RUN npm rebuild sharp --prefix apps/api || true
+RUN npm rebuild bcrypt || true
+RUN npm rebuild sharp || true
 
 # ── Stage 2: builder ────────────────────────────────────────────────────────
 FROM deps AS builder

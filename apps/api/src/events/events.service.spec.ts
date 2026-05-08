@@ -27,7 +27,8 @@ describe('EventsService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    service = new EventsService(mockPrisma as any);
+    const mockGuard = { ensureCanCreate: vi.fn().mockResolvedValue(undefined) } as any;
+    service = new EventsService(mockPrisma as any, mockGuard);
   });
 
   describe('create', () => {

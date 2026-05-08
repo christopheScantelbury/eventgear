@@ -9,6 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: process.env.NODE_ENV !== 'test' }),
+    { rawBody: true }, // necessário para validar webhook do Stripe
   );
 
   // Multipart (file uploads)

@@ -10,16 +10,26 @@ datasource db {
 
 // ── Empresa (multi-tenant root) ──────────────────────────────────
 model Company {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  phone     String?
-  createdAt DateTime @default(now())
+  id               String    @id @default(cuid())
+  name             String
+  email            String    @unique
+  phone            String?
+  // Stripe
+  stripeCustomerId String?   @unique
+  // Plano atual + trial
+  planId           String?
+  plan             Plan?     @relation(fields: [planId], references: [id])
+  trialEndsAt      DateTime?
+  createdAt        DateTime  @default(now())
 
-  users     User[]
-  materials Material[]
-  events    Event[]
-  auditLogs AuditLog[]
+  users         User[]
+  materials     Material[]
+  events        Event[]
+  customers     Customer[]
+  subscriptions Subscription[]
+  auditLogs     AuditLog[]
+
+  @@index([planId])
 }
 
 // ── Usuários ──────────────────────────────────────────────────────
@@ -44,25 +54,27 @@ enum UserRole {
 
 // ── Materiais (Equipamentos) ──────────────────────────────────────
 model Material {
-  id            String         @id @default(cuid())
-  companyId     String
-  company       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  name          String
-  category      String
-  totalQty      Int
-  description   String?
-  serialNumber  String?
-  brand         String?
-  model         String?
-  replaceCost   Decimal?       @db.Decimal(10, 2)
-  qrCode        String         @unique
-  status        MaterialStatus @default(AVAILABLE)
-  deletedAt     DateTime?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id             String         @id @default(cuid())
+  companyId      String
+  company        Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name           String
+  category       String
+  totalQty       Int
+  description    String?
+  serialNumber   String?
+  brand          String?
+  model          String?
+  replaceCost    Decimal?       @db.Decimal(10, 2)
+  dailyRentPrice Decimal?       @db.Decimal(10, 2) // preço diário de locação
+  qrCode         String         @unique
+  status         MaterialStatus @default(AVAILABLE)
+  deletedAt      DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 
   photos      MaterialPhoto[]
   allocations EventMaterial[]
+  blocks      CalendarBlock[]
 
   @@index([companyId])
   @@index([companyId, status])
@@ -89,23 +101,32 @@ model MaterialPhoto {
 
 // ── Eventos ───────────────────────────────────────────────────────
 model Event {
-  id         String      @id @default(cuid())
-  companyId  String
-  company    Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  name       String
-  startDate  DateTime
-  returnDate DateTime
-  location   String?
-  client     String?
-  notes      String?
-  status     EventStatus @default(PLANNED)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id          String      @id @default(cuid())
+  companyId   String
+  company     Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customerId  String?
+  customer    Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  name        String
+  startDate   DateTime
+  returnDate  DateTime
+  location    String?
+  // Mantido para retrocompatibilidade — novos eventos devem usar customerId
+  client      String?
+  notes       String?
+  status      EventStatus @default(PLANNED)
+  // Comercial
+  totalAmount Decimal?    @db.Decimal(12, 2) // valor total do evento
+  discount    Decimal?    @db.Decimal(12, 2)
+  paid        Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   materials EventMaterial[]
 
   @@index([companyId])
   @@index([companyId, status])
+  @@index([customerId])
+  @@index([startDate, returnDate])
 }
 
 enum EventStatus {
@@ -174,4 +195,122 @@ model AuditLog {
 
   @@index([companyId, createdAt])
   @@index([entity, entityId])
+}
+
+// ── CRM: Cliente ─────────────────────────────────────────────────
+model Customer {
+  id        String       @id @default(cuid())
+  companyId String
+  company   Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name      String
+  type      CustomerType @default(PJ)
+  document  String? // CPF ou CNPJ (sem máscara)
+  email     String?
+  phone     String?
+  address   String?
+  city      String?
+  state     String? // UF (2 letras)
+  zipCode   String?
+  notes     String?
+  tags      String[]     @default([])
+  deletedAt DateTime?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  events Event[]
+
+  @@index([companyId])
+  @@index([companyId, name])
+  @@index([companyId, document])
+}
+
+enum CustomerType {
+  PJ
+  PF
+}
+
+// ── Billing: Plano ───────────────────────────────────────────────
+model Plan {
+  id                String   @id @default(cuid())
+  slug              String   @unique // basico | pro | business
+  name              String
+  description       String?
+  // Limites
+  maxMaterials      Int // -1 = ilimitado
+  maxEventsPerMonth Int // -1 = ilimitado
+  maxUsers          Int
+  maxBranches       Int      @default(1)
+  // Features
+  hasReports        Boolean  @default(true)
+  hasPdfExport      Boolean  @default(false)
+  hasMultiBranch    Boolean  @default(false)
+  // Preços
+  priceMonthlyBrl   Decimal  @db.Decimal(10, 2)
+  // Stripe
+  stripeProductId   String?
+  stripePriceId     String?
+  active            Boolean  @default(true)
+  sortOrder         Int      @default(0)
+  createdAt         DateTime @default(now())
+
+  companies     Company[]
+  subscriptions Subscription[]
+}
+
+// ── Billing: Assinatura ──────────────────────────────────────────
+model Subscription {
+  id                   String             @id @default(cuid())
+  companyId            String
+  company              Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  planId               String
+  plan                 Plan               @relation(fields: [planId], references: [id])
+  // Stripe
+  stripeSubscriptionId String?            @unique
+  stripeCustomerId     String?
+  status               SubscriptionStatus @default(TRIALING)
+  // Período
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  trialEndsAt          DateTime?
+  cancelAt             DateTime?
+  canceledAt           DateTime?
+  // Tracking
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  @@index([companyId])
+  @@index([status])
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
+  UNPAID
+  PAUSED
+}
+
+// ── Calendário: Bloqueios (manutenção, hold) ─────────────────────
+model CalendarBlock {
+  id         String   @id @default(cuid())
+  materialId String
+  material   Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  startDate  DateTime
+  endDate    DateTime
+  reason     String // MAINTENANCE | HOLD | OTHER
+  notes      String?
+  createdAt  DateTime @default(now())
+
+  @@index([materialId])
+  @@index([startDate, endDate])
+}
+
+// ── Stripe: dedup de webhook events ──────────────────────────────
+model StripeEvent {
+  id          String   @id // Stripe event id
+  type        String
+  processedAt DateTime @default(now())
 }

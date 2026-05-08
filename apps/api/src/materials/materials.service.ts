@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
+import { BillingGuardService } from '../billing/billing-guard.service';
 import { CreateMaterialDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
 import { ListMaterialsDto } from './dto/list-materials.dto';
@@ -11,9 +12,11 @@ export class MaterialsService {
   constructor(
     private prisma: PrismaService,
     private storage: StorageService,
+    private billingGuard: BillingGuardService,
   ) {}
 
   async create(companyId: string, dto: CreateMaterialDto) {
+    await this.billingGuard.ensureCanCreate(companyId, 'material');
     const qrCode = `EG${crypto.randomBytes(8).toString('hex').toUpperCase()}`;
     return this.prisma.material.create({
       data: { ...dto, companyId, qrCode },

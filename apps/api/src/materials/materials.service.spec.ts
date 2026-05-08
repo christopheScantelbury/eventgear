@@ -42,7 +42,8 @@ describe('MaterialsService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    service = new MaterialsService(mockPrisma as any, mockStorage as any);
+    const mockGuard = { ensureCanCreate: vi.fn().mockResolvedValue(undefined) } as any;
+    service = new MaterialsService(mockPrisma as any, mockStorage as any, mockGuard);
   });
 
   describe('create', () => {

@@ -7,14 +7,19 @@ import {
 import * as bcrypt from 'bcryptjs';
 import { UserRole } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { BillingGuardService } from '../billing/billing-guard.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private billingGuard: BillingGuardService,
+  ) {}
 
   async create(companyId: string, dto: CreateUserDto) {
+    await this.billingGuard.ensureCanCreate(companyId, 'user');
     const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
     if (existing) throw new ConflictException('Email already in use');
 

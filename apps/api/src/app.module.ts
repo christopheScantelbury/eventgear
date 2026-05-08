@@ -12,6 +12,9 @@ import { ChecklistModule } from './checklist/checklist.module';
 import { ReportsModule } from './reports/reports.module';
 import { HealthModule } from './health/health.module';
 import { UsersModule } from './users/users.module';
+import { CustomersModule } from './customers/customers.module';
+import { BillingModule } from './billing/billing.module';
+import { CalendarModule } from './calendar/calendar.module';
 
 @Module({
   imports: [
@@ -23,6 +26,9 @@ import { UsersModule } from './users/users.module';
     MailModule,
     AuthModule,
     UsersModule,
+    CustomersModule,
+    BillingModule,
+    CalendarModule,
     MaterialsModule,
     EventsModule,
     ChecklistModule,

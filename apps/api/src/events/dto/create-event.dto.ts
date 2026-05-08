@@ -1,4 +1,5 @@
-import { IsString, IsDateString, IsOptional, MinLength, MaxLength } from 'class-validator';
+import { IsString, IsDateString, IsOptional, MinLength, MaxLength, IsNumber, IsBoolean } from 'class-validator';
+import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateEventDto {
@@ -22,7 +23,12 @@ export class CreateEventDto {
   @MaxLength(255)
   location?: string;
 
-  @ApiPropertyOptional({ example: 'Prefeitura Municipal' })
+  @ApiPropertyOptional({ description: 'ID do Customer (preferido) — preenche automaticamente client' })
+  @IsOptional()
+  @IsString()
+  customerId?: string;
+
+  @ApiPropertyOptional({ example: 'Prefeitura Municipal', description: 'Nome livre — usado quando não há customerId' })
   @IsOptional()
   @IsString()
   @MaxLength(150)
@@ -32,4 +38,21 @@ export class CreateEventDto {
   @IsOptional()
   @IsString()
   notes?: string;
+
+  @ApiPropertyOptional({ example: 5000.00 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  totalAmount?: number;
+
+  @ApiPropertyOptional({ example: 200.00 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  discount?: number;
+
+  @ApiPropertyOptional({ default: false })
+  @IsOptional()
+  @IsBoolean()
+  paid?: boolean;
 }

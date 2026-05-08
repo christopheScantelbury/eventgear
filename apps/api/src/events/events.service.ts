@@ -5,6 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { BillingGuardService } from '../billing/billing-guard.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { AddMaterialDto } from './dto/add-material.dto';
@@ -14,20 +15,42 @@ import { EventStatus } from '@prisma/client';
 
 @Injectable()
 export class EventsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private billingGuard: BillingGuardService,
+  ) {}
 
   async create(companyId: string, dto: CreateEventDto) {
+    await this.billingGuard.ensureCanCreate(companyId, 'event');
+
+    // Se customerId, valida e preenche client com o nome
+    let resolvedClient = dto.client;
+    if (dto.customerId) {
+      const customer = await this.prisma.customer.findFirst({
+        where: { id: dto.customerId, companyId, deletedAt: null },
+      });
+      if (!customer) throw new BadRequestException('Customer not found');
+      resolvedClient = customer.name;
+    }
+
     return this.prisma.event.create({
       data: {
         companyId,
+        customerId: dto.customerId,
         name: dto.name,
         startDate: new Date(dto.startDate),
         returnDate: new Date(dto.returnDate),
         location: dto.location,
-        client: dto.client,
+        client: resolvedClient,
         notes: dto.notes,
+        totalAmount: dto.totalAmount,
+        discount: dto.discount,
+        paid: dto.paid ?? false,
       },
-      include: { materials: { include: { material: true } } },
+      include: {
+        materials: { include: { material: true } },
+        customer: true,
+      },
     });
   }
 

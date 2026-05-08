@@ -1,7 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -14,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/toast';
+import { CustomerPicker } from '@/components/eventos/customer-picker';
 
 const schema = z
   .object({
@@ -21,8 +23,10 @@ const schema = z
     startDate: z.string().min(1, 'Data de início obrigatória'),
     returnDate: z.string().min(1, 'Data de retorno obrigatória'),
     location: z.string().optional(),
+    customerId: z.string().nullable().optional(),
     client: z.string().optional(),
     notes: z.string().optional(),
+    totalAmount: z.coerce.number().optional(),
   })
   .refine((d) => new Date(d.returnDate) >= new Date(d.startDate), {
     message: 'Data de retorno deve ser após o início',
@@ -41,12 +45,21 @@ export default function NovoEventoPage() {
   const {
     register,
     handleSubmit,
+    control,
+    setValue,
+    watch,
     formState: { errors },
-  } = useForm<FormData>({ resolver: zodResolver(schema) });
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: { customerId: null, client: '' },
+  });
+
+  const customerId = watch('customerId');
+  const clientText = watch('client');
 
   const { mutate, isPending } = useMutation({
     mutationFn: (data: FormData) => eventsApi.create(data),
-    onSuccess: (event) => {
+    onSuccess: (event: any) => {
       qc.invalidateQueries({ queryKey: ['events'] });
       toast('Evento criado!', 'success');
       router.push(`/eventos/${event.id}`);
@@ -111,15 +124,47 @@ export default function NovoEventoPage() {
           </div>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="location">Local</Label>
-            <Input id="location" placeholder="Cidade ou venue" {...register('location')} />
-          </div>
-          <div>
-            <Label htmlFor="client">Cliente</Label>
-            <Input id="client" placeholder="Nome do cliente" {...register('client')} />
-          </div>
+        <div>
+          <Label htmlFor="location">Local</Label>
+          <Input id="location" placeholder="Cidade ou venue" {...register('location')} />
+        </div>
+
+        {/* Cliente: Customer cadastrado OU texto livre */}
+        <div>
+          <Label>Cliente</Label>
+          <Controller
+            control={control}
+            name="customerId"
+            render={() => (
+              <CustomerPicker
+                value={customerId}
+                fallback={!customerId ? clientText : null}
+                onChange={(id, _name) => {
+                  setValue('customerId', id);
+                  if (id) setValue('client', '');
+                }}
+              />
+            )}
+          />
+          {!customerId && (
+            <div className="mt-2">
+              <Input
+                placeholder="Ou digite o nome (cliente sem cadastro)"
+                {...register('client')}
+              />
+            </div>
+          )}
+        </div>
+
+        <div>
+          <Label htmlFor="totalAmount">Valor total do evento (R$)</Label>
+          <Input
+            id="totalAmount"
+            type="number"
+            step="0.01"
+            placeholder="0.00"
+            {...register('totalAmount')}
+          />
         </div>
 
         <div>

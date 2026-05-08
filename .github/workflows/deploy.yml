@@ -5,9 +5,9 @@ on:
     branches: [main]
 
 jobs:
-  # ── 1. Testes antes de qualquer deploy ────────────────────────────────────
+  # ── 1. Testes — gate obrigatorio antes de qualquer deploy ─────────────────
   test:
-    name: Tests (gate)
+    name: Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -39,52 +39,89 @@ jobs:
           NODE_ENV: test
         run: npx vitest run
 
-  # ── 2. Deploy API no Easypanel (rebuild do GitHub) ────────────────────────
+  # ── 2. Deploy API ─────────────────────────────────────────────────────────
   deploy-api:
-    name: Deploy API -> Easypanel
+    name: Deploy API
     runs-on: ubuntu-latest
     needs: test
     environment: production
 
     steps:
-      - name: Trigger Easypanel rebuild (API)
+      - name: Trigger rebuild (API)
         run: |
           curl -f -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}" \
             -H "Content-Type: application/json" \
             -d "{}"
 
-      - name: Health check pos-deploy
-        timeout-minutes: 20
+      - name: Wait for build + boot
+        run: sleep 360
+
+      - name: Health check API
+        timeout-minutes: 10
         run: |
-          echo "Aguardando build Docker + boot do container..."
-          sleep 360
           for i in $(seq 1 20); do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
               "${{ secrets.API_HEALTH_URL }}/v1/health" || echo "000")
-            echo "Tentativa $i: HTTP $STATUS"
-            [ "$STATUS" = "200" ] && exit 0
+            echo "Attempt $i: HTTP $STATUS"
+            if [ "$STATUS" = "200" ]; then
+              echo "API deploy OK"
+              exit 0
+            fi
             sleep 30
           done
-          echo "Health check falhou apos ~16min" && exit 1
+          echo "API health check failed after ~10min"
+          exit 1
 
-      - name: Notify success
-        if: success()
-        run: echo "API deployada com sucesso"
-
-  # ── 3. Deploy Web no Easypanel ────────────────────────────────────────────
+  # ── 3. Deploy Web ─────────────────────────────────────────────────────────
   deploy-web:
-    name: Deploy Web -> Easypanel
+    name: Deploy Web
     runs-on: ubuntu-latest
     needs: test
     environment: production
 
     steps:
-      - name: Trigger Easypanel rebuild (Web)
+      - name: Trigger rebuild (Web)
         run: |
           curl -f -X POST "${{ secrets.EASYPANEL_WEB_WEBHOOK }}" \
             -H "Content-Type: application/json" \
             -d "{}"
 
-      - name: Notify success
-        if: success()
-        run: echo "Web deployada com sucesso"
+      - name: Wait for build + boot
+        run: sleep 420
+
+      - name: Health check Web
+        timeout-minutes: 10
+        run: |
+          for i in $(seq 1 20); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              "${{ secrets.WEB_HEALTH_URL }}" || echo "000")
+            echo "Attempt $i: HTTP $STATUS"
+            if [ "$STATUS" = "200" ] || [ "$STATUS" = "301" ] || [ "$STATUS" = "302" ]; then
+              echo "Web deploy OK"
+              exit 0
+            fi
+            sleep 30
+          done
+          echo "Web health check failed after ~10min"
+          exit 1
+
+  # ── 4. Notificacao final ──────────────────────────────────────────────────
+  notify:
+    name: Notify
+    runs-on: ubuntu-latest
+    needs: [deploy-api, deploy-web]
+    if: always()
+
+    steps:
+      - name: Summary
+        run: |
+          API_STATUS="${{ needs.deploy-api.result }}"
+          WEB_STATUS="${{ needs.deploy-web.result }}"
+          echo "API deploy: $API_STATUS"
+          echo "Web deploy: $WEB_STATUS"
+          if [ "$API_STATUS" = "success" ] && [ "$WEB_STATUS" = "success" ]; then
+            echo "All services deployed successfully"
+          else
+            echo "One or more deploys failed"
+            exit 1
+          fi

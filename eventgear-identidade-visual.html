@@ -1,0 +1,2105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EventGear — Identidade Visual</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════════ */
+:root {
+  /* Brand */
+  --amber-300: #FCD34D;
+  --amber-400: #FBBF24;
+  --amber-500: #F59E0B;
+  --amber-600: #D97706;
+  --amber-700: #B45309;
+  --amber-900: #451A03;
+
+  /* Dark surfaces */
+  --dark-950: #060A12;
+  --dark-900: #0C1220;
+  --dark-800: #111C2E;
+  --dark-700: #17253C;
+  --dark-600: #1E304D;
+  --dark-500: #2A4166;
+  --dark-border: rgba(255,255,255,0.07);
+  --dark-border-med: rgba(255,255,255,0.12);
+
+  /* Light surfaces */
+  --light-bg: #F4F6F9;
+  --light-card: #FFFFFF;
+  --light-border: #E2E8F0;
+
+  /* Status colors */
+  --status-available: #22C55E;
+  --status-available-bg: rgba(34,197,94,0.12);
+  --status-allocated: #F59E0B;
+  --status-allocated-bg: rgba(245,158,11,0.12);
+  --status-maintenance: #60A5FA;
+  --status-maintenance-bg: rgba(96,165,250,0.12);
+  --status-lost: #F87171;
+  --status-lost-bg: rgba(248,113,113,0.12);
+
+  /* Checklist */
+  --check-confirmed: #22C55E;
+  --check-pending: #64748B;
+  --check-missing: #F87171;
+  --check-damaged: #F59E0B;
+
+  /* Text */
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted: #475569;
+  --text-on-light: #0F172A;
+
+  /* Typography */
+  --font-display: 'Barlow Condensed', system-ui, sans-serif;
+  --font-body: 'Barlow', system-ui, sans-serif;
+  --font-semi: 'Barlow Semi Condensed', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  /* Radius */
+  --r-xs: 4px; --r-sm: 6px; --r-md: 8px; --r-lg: 12px;
+  --r-xl: 16px; --r-2xl: 20px; --r-full: 9999px;
+}
+
+/* ═══════════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--dark-900);
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+/* ═══════════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════════ */
+.page-wrapper {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+}
+
+/* ═══ SIDEBAR ═══ */
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--dark-950);
+  border-right: 1px solid var(--dark-border);
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--dark-border);
+}
+.sidebar-brand-text {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text-primary);
+}
+.sidebar-brand-text span { color: var(--amber-500); }
+.sidebar-section-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 16px 8px 8px;
+}
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.15s;
+  font-family: var(--font-semi);
+  font-weight: 500;
+}
+.sidebar a:hover { background: var(--dark-800); color: var(--text-primary); }
+.sidebar a.active { background: rgba(245,158,11,0.12); color: var(--amber-400); }
+.sidebar a .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor; flex-shrink: 0; opacity: 0.6;
+}
+
+/* ═══ MAIN ═══ */
+.main {
+  max-width: 900px;
+  padding: 56px 48px;
+}
+
+/* ═══════════════════════════════════════════════
+   SECTION STRUCTURE
+═══════════════════════════════════════════════ */
+.section { margin-bottom: 80px; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--dark-border);
+}
+.section-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--amber-600);
+  background: rgba(245,158,11,0.08);
+  border: 1px solid rgba(245,158,11,0.2);
+  padding: 3px 8px;
+  border-radius: var(--r-xs);
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text-primary);
+}
+.subsection { margin-bottom: 40px; }
+.subsection-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+/* ═══ PREVIEW BOX ═══ */
+.preview {
+  background: var(--dark-800);
+  border: 1px solid var(--dark-border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.preview-header {
+  background: var(--dark-950);
+  border-bottom: 1px solid var(--dark-border);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.preview-header-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+}
+.preview-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+.preview-body { padding: 32px; }
+.preview-body.tight { padding: 20px; }
+.preview-body.center { display: flex; align-items: center; justify-content: center; }
+
+/* Notes */
+.note {
+  padding: 12px 16px;
+  border-radius: var(--r-md);
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: 12px;
+}
+.note-amber {
+  background: rgba(245,158,11,0.08);
+  border-left: 3px solid var(--amber-500);
+  color: var(--amber-300);
+}
+.note-green {
+  background: rgba(34,197,94,0.08);
+  border-left: 3px solid var(--status-available);
+  color: #86EFAC;
+}
+.note-red {
+  background: rgba(248,113,113,0.08);
+  border-left: 3px solid var(--status-lost);
+  color: #FCA5A5;
+}
+.note strong { font-weight: 600; }
+
+/* ═══════════════════════════════════════════════
+   LOGO COMPONENTS
+═══════════════════════════════════════════════ */
+.logo-display {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.logo-wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--text-primary);
+  line-height: 1;
+}
+.logo-wordmark .gear { color: var(--amber-500); }
+
+.logo-versions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.logo-version-card {
+  border: 1px solid var(--dark-border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.logo-version-dark {
+  background: var(--dark-950);
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.logo-version-light {
+  background: #FFFFFF;
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.logo-version-light .logo-wordmark { color: var(--text-on-light); }
+.logo-version-light .logo-wordmark .gear { color: var(--amber-500); }
+.logo-version-footer {
+  background: var(--dark-800);
+  padding: 10px 16px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════════════
+   COLOR SWATCHES
+═══════════════════════════════════════════════ */
+.color-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.color-row.small { grid-template-columns: repeat(4, 1fr); }
+.color-card {
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--dark-border);
+}
+.color-swatch { height: 72px; position: relative; }
+.color-swatch.featured::after {
+  content: '★';
+  position: absolute;
+  top: 8px; right: 8px;
+  color: rgba(0,0,0,0.4);
+  font-size: 12px;
+}
+.color-meta {
+  background: var(--dark-800);
+  padding: 10px 12px;
+}
+.color-name { font-size: 11px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+.color-hex { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
+.color-use { font-size: 10.5px; color: var(--text-secondary); line-height: 1.4; }
+
+/* Status palette */
+.status-palette {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.status-card {
+  border-radius: var(--r-lg);
+  border: 1px solid var(--dark-border);
+  overflow: hidden;
+}
+.status-swatch { height: 56px; }
+.status-meta { background: var(--dark-800); padding: 10px 12px; }
+
+/* ═══════════════════════════════════════════════
+   TYPOGRAPHY
+═══════════════════════════════════════════════ */
+.type-table { width: 100%; border-collapse: collapse; }
+.type-table tr { border-bottom: 1px solid var(--dark-border); }
+.type-table td { padding: 20px 16px; vertical-align: middle; }
+.type-meta-block .type-name { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.type-meta-block .type-spec { font-family: var(--font-mono); font-size: 10px; color: var(--amber-600); line-height: 1.8; }
+.type-meta-block .type-use { font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.5; }
+
+/* ═══════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════ */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-semi); font-weight: 600;
+  border: none; cursor: pointer; transition: all 0.15s;
+  line-height: 1; text-decoration: none; letter-spacing: 0.3px;
+}
+.btn-lg { padding: 13px 22px; border-radius: var(--r-md); font-size: 15px; }
+.btn-md { padding: 10px 18px; border-radius: var(--r-md); font-size: 14px; }
+.btn-sm { padding: 7px 13px; border-radius: var(--r-sm); font-size: 13px; }
+
+.btn-primary {
+  background: var(--amber-500);
+  color: var(--dark-900);
+  box-shadow: 0 2px 8px rgba(245,158,11,0.3);
+}
+.btn-primary:hover { background: var(--amber-400); box-shadow: 0 4px 16px rgba(245,158,11,0.4); }
+
+.btn-secondary {
+  background: rgba(245,158,11,0.12);
+  color: var(--amber-400);
+  border: 1px solid rgba(245,158,11,0.25);
+}
+.btn-secondary:hover { background: rgba(245,158,11,0.18); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--dark-border-med);
+}
+.btn-ghost:hover { background: var(--dark-700); color: var(--text-primary); }
+
+.btn-danger {
+  background: rgba(248,113,113,0.12);
+  color: #F87171;
+  border: 1px solid rgba(248,113,113,0.25);
+}
+.btn-danger:hover { background: rgba(248,113,113,0.2); }
+
+/* QR Button — Special */
+.btn-qr {
+  background: var(--dark-700);
+  color: var(--text-primary);
+  border: 1.5px solid var(--amber-600);
+  padding: 14px 22px;
+  border-radius: var(--r-md);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 1px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+.btn-qr:hover {
+  background: rgba(245,158,11,0.12);
+  border-color: var(--amber-400);
+  box-shadow: 0 0 20px rgba(245,158,11,0.2);
+}
+.btn-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+/* ═══════════════════════════════════════════════
+   BADGES / STATUS
+═══════════════════════════════════════════════ */
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+  padding: 4px 10px; border-radius: var(--r-xs);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  border: 1px solid transparent;
+}
+.badge::before { content: '●'; font-size: 8px; }
+.badge-available { background: var(--status-available-bg); color: var(--status-available); border-color: rgba(34,197,94,0.2); }
+.badge-allocated { background: var(--status-allocated-bg); color: var(--status-allocated); border-color: rgba(245,158,11,0.2); }
+.badge-maintenance { background: var(--status-maintenance-bg); color: var(--status-maintenance); border-color: rgba(96,165,250,0.2); }
+.badge-lost { background: var(--status-lost-bg); color: var(--status-lost); border-color: rgba(248,113,113,0.2); }
+
+.badge-event { background: rgba(139,92,246,0.12); color: #C4B5FD; border-color: rgba(139,92,246,0.2); }
+.badge-admin { background: rgba(245,158,11,0.08); color: var(--amber-400); border-color: rgba(245,158,11,0.2); }
+.badge-operator { background: var(--dark-700); color: var(--text-secondary); border-color: var(--dark-border-med); }
+
+/* ═══════════════════════════════════════════════
+   CARDS
+═══════════════════════════════════════════════ */
+.material-card {
+  background: var(--dark-800);
+  border: 1px solid var(--dark-border);
+  border-radius: var(--r-xl);
+  padding: 20px;
+  transition: border-color 0.2s;
+  cursor: pointer;
+}
+.material-card:hover { border-color: var(--dark-border-med); }
+
+.material-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.material-card-icon {
+  width: 44px; height: 44px;
+  background: var(--dark-700);
+  border: 1px solid var(--dark-border-med);
+  border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.material-card-title {
+  font-family: var(--font-semi);
+  font-size: 15px; font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+.material-card-sub { font-size: 12px; color: var(--text-muted); }
+.material-card-qty {
+  font-family: var(--font-display);
+  font-size: 28px; font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.material-card-qty-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+.material-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+/* Event card */
+.event-card {
+  background: var(--dark-800);
+  border: 1px solid var(--dark-border);
+  border-radius: var(--r-xl);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.event-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.event-card.planned::before { background: var(--dark-border-med); }
+.event-card.in-progress::before { background: var(--amber-500); }
+.event-card.completed::before { background: var(--status-available); }
+
+.event-card-name {
+  font-family: var(--font-display);
+  font-size: 18px; font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.event-card-meta {
+  font-size: 12px; color: var(--text-muted);
+  margin-bottom: 16px;
+  display: flex; gap: 12px; flex-wrap: wrap;
+}
+.event-card-stat {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0;
+  border-top: 1px solid var(--dark-border);
+  font-size: 13px;
+}
+.event-card-stat-label { color: var(--text-secondary); }
+.event-card-stat-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════
+   CHECKLIST
+═══════════════════════════════════════════════ */
+.checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--dark-800);
+  border: 1px solid var(--dark-border);
+  border-radius: var(--r-lg);
+  margin-bottom: 8px;
+  transition: all 0.15s;
+}
+.checklist-icon {
+  width: 36px; height: 36px;
+  border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 16px;
+}
+.checklist-icon.confirmed { background: var(--status-available-bg); }
+.checklist-icon.pending { background: var(--dark-700); }
+.checklist-icon.missing { background: var(--status-lost-bg); }
+.checklist-icon.damaged { background: var(--status-allocated-bg); }
+
+.checklist-name {
+  flex: 1;
+  font-family: var(--font-semi);
+  font-size: 14px; font-weight: 600;
+  color: var(--text-primary);
+}
+.checklist-qty {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  background: var(--dark-700);
+  border-radius: var(--r-xs);
+}
+.checklist-status {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: var(--r-xs);
+}
+.checklist-status.confirmed { background: var(--status-available-bg); color: var(--status-available); }
+.checklist-status.pending { background: var(--dark-700); color: var(--text-muted); }
+.checklist-status.missing { background: var(--status-lost-bg); color: var(--status-lost); }
+.checklist-status.damaged { background: var(--status-allocated-bg); color: var(--status-allocated); }
+
+/* ═══════════════════════════════════════════════
+   INPUTS & FORMS
+═══════════════════════════════════════════════ */
+.field-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.field-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); }
+.field-input {
+  font-family: var(--font-body); font-size: 14px;
+  padding: 11px 14px;
+  background: var(--dark-950);
+  border: 1px solid var(--dark-border-med);
+  border-radius: var(--r-md);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+}
+.field-input::placeholder { color: var(--text-muted); }
+.field-input:focus { border-color: var(--amber-600); box-shadow: 0 0 0 3px rgba(245,158,11,0.12); }
+.field-input.success { border-color: var(--status-available); }
+.field-input.error { border-color: var(--status-lost); }
+.field-select {
+  font-family: var(--font-body); font-size: 14px;
+  padding: 11px 14px;
+  background: var(--dark-950);
+  border: 1px solid var(--dark-border-med);
+  border-radius: var(--r-md);
+  color: var(--text-primary);
+  outline: none;
+  width: 100%;
+}
+.field-hint { font-size: 12px; color: var(--text-muted); }
+.field-error { font-size: 12px; color: var(--status-lost); }
+.field-success { font-size: 12px; color: var(--status-available); }
+
+/* ═══════════════════════════════════════════════
+   QR CODE COMPONENT
+═══════════════════════════════════════════════ */
+.qr-scanner-mock {
+  background: var(--dark-950);
+  border-radius: var(--r-xl);
+  padding: 24px;
+  text-align: center;
+  border: 1px solid var(--dark-border);
+  max-width: 280px;
+}
+.qr-viewport {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 20px;
+  border-radius: var(--r-lg);
+  background: var(--dark-800);
+  overflow: hidden;
+  border: 1px solid var(--dark-border-med);
+}
+.qr-corner {
+  position: absolute;
+  width: 24px; height: 24px;
+  border-color: var(--amber-500);
+  border-style: solid;
+  border-width: 0;
+}
+.qr-corner.tl { top: 12px; left: 12px; border-top-width: 3px; border-left-width: 3px; border-radius: 2px 0 0 0; }
+.qr-corner.tr { top: 12px; right: 12px; border-top-width: 3px; border-right-width: 3px; border-radius: 0 2px 0 0; }
+.qr-corner.bl { bottom: 12px; left: 12px; border-bottom-width: 3px; border-left-width: 3px; border-radius: 0 0 0 2px; }
+.qr-corner.br { bottom: 12px; right: 12px; border-bottom-width: 3px; border-right-width: 3px; border-radius: 0 0 2px 0; }
+.qr-scan-line {
+  position: absolute;
+  left: 24px; right: 24px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--amber-500), transparent);
+  top: 50%;
+  box-shadow: 0 0 8px var(--amber-500);
+  animation: scanLine 2s ease-in-out infinite;
+}
+@keyframes scanLine {
+  0% { top: 20%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 80%; opacity: 0; }
+}
+.qr-icon-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.15;
+}
+.qr-label {
+  font-family: var(--font-display);
+  font-size: 14px; font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+.qr-hint { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); }
+
+/* QR Code Label (etiqueta física) */
+.qr-label-card {
+  background: white;
+  border-radius: var(--r-lg);
+  padding: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  color: #0F172A;
+  border: 1px solid #E2E8F0;
+  width: 280px;
+}
+.qr-label-qr {
+  width: 80px; height: 80px;
+  background: white;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.qr-label-info {}
+.qr-label-product {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 11px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--amber-600);
+  margin-bottom: 2px;
+}
+.qr-label-name {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600; font-size: 14px;
+  color: #0F172A;
+  margin-bottom: 4px;
+}
+.qr-label-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: #94A3B8;
+}
+
+/* ═══════════════════════════════════════════════
+   ALERTS
+═══════════════════════════════════════════════ */
+.alert {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--r-lg);
+  font-size: 13.5px; line-height: 1.55;
+  margin-bottom: 10px;
+  border: 1px solid transparent;
+}
+.alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.alert-title { font-family: var(--font-semi); font-weight: 600; margin-bottom: 2px; font-size: 14px; }
+.alert-body { font-size: 13px; opacity: 0.85; }
+.alert.amber { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.2); color: var(--amber-300); }
+.alert.green { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.2); color: #86EFAC; }
+.alert.red { background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.2); color: #FCA5A5; }
+.alert.blue { background: rgba(96,165,250,0.08); border-color: rgba(96,165,250,0.2); color: #BFDBFE; }
+
+/* ═══════════════════════════════════════════════
+   NAVBAR / HEADER
+═══════════════════════════════════════════════ */
+.app-header {
+  background: var(--dark-950);
+  border-bottom: 1px solid var(--dark-border);
+  height: 56px;
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+}
+.app-header-brand {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-display);
+  font-size: 18px; font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--text-primary);
+}
+.app-header-brand span { color: var(--amber-500); }
+.app-header-nav { display: flex; gap: 4px; }
+.nav-item {
+  font-family: var(--font-semi);
+  font-size: 13px; font-weight: 500;
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+.nav-item:hover { background: var(--dark-700); color: var(--text-primary); }
+.nav-item.active { background: rgba(245,158,11,0.1); color: var(--amber-400); }
+.app-header-right { display: flex; align-items: center; gap: 12px; }
+.user-avatar {
+  width: 32px; height: 32px;
+  background: var(--dark-700);
+  border: 1.5px solid var(--dark-border-med);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700; font-size: 13px;
+  color: var(--amber-400);
+}
+
+/* ═══════════════════════════════════════════════
+   DASHBOARD MOCKUP
+═══════════════════════════════════════════════ */
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--dark-800);
+  border: 1px solid var(--dark-border);
+  border-radius: var(--r-xl);
+  padding: 20px;
+}
+.stat-card-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
+.stat-card-value { font-family: var(--font-display); font-size: 36px; font-weight: 800; letter-spacing: -1px; color: var(--text-primary); line-height: 1; margin-bottom: 4px; }
+.stat-card-sub { font-size: 12px; color: var(--text-muted); }
+
+/* ═══════════════════════════════════════════════
+   CODE BLOCK
+═══════════════════════════════════════════════ */
+.code-block {
+  background: var(--dark-950);
+  border: 1px solid var(--dark-border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.code-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--dark-border);
+}
+.code-lang { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.code-copy { font-family: var(--font-mono); font-size: 11px; color: var(--amber-600); cursor: pointer; }
+.code-body {
+  padding: 16px 20px;
+  font-family: var(--font-mono);
+  font-size: 13px; line-height: 1.7;
+  color: #CBD5E1;
+  overflow-x: auto;
+}
+.kw { color: #C4B5FD; } /* keywords */
+.kv { color: #86EFAC; } /* values/strings */
+.km { color: #7DD3FC; } /* methods */
+.kn { color: #FCA5A5; } /* numbers */
+.kc { color: #475569; } /* comments */
+
+/* ═══════════════════════════════════════════════
+   TOV (Tom de Voz)
+═══════════════════════════════════════════════ */
+.tov-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tov-card { border: 1px solid var(--dark-border); border-radius: var(--r-lg); overflow: hidden; }
+.tov-header { padding: 10px 14px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; }
+.tov-header.good { background: rgba(34,197,94,0.1); color: #86EFAC; }
+.tov-header.good::before { content: '✓ '; }
+.tov-header.bad { background: rgba(248,113,113,0.1); color: #FCA5A5; }
+.tov-header.bad::before { content: '✕ '; }
+.tov-body { padding: 14px; font-size: 13.5px; color: var(--text-secondary); line-height: 1.65; background: var(--dark-800); }
+
+/* ═══════════════════════════════════════════════
+   SPACING GRID
+═══════════════════════════════════════════════ */
+.spacing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.spacing-item { display: flex; flex-direction: column; gap: 8px; }
+.spacing-bar-wrap { height: 20px; display: flex; align-items: center; }
+.spacing-bar { background: var(--amber-700); border: 1px solid var(--amber-600); height: 12px; border-radius: 2px; }
+.spacing-label { font-family: var(--font-mono); font-size: 11px; color: var(--text-primary); }
+.spacing-px { font-family: var(--font-mono); font-size: 10px; color: var(--amber-600); }
+.spacing-use { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+
+/* ═══════════════════════════════════════════════
+   MOBILE MOCKUP
+═══════════════════════════════════════════════ */
+.phone-mockup {
+  width: 240px;
+  background: var(--dark-950);
+  border: 2px solid var(--dark-border-med);
+  border-radius: 32px;
+  padding: 16px 12px;
+  position: relative;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.5);
+}
+.phone-notch {
+  width: 60px; height: 8px;
+  background: var(--dark-800);
+  border-radius: 4px;
+  margin: 0 auto 16px;
+}
+.phone-screen {
+  background: var(--dark-900);
+  border-radius: 20px;
+  overflow: hidden;
+  min-height: 380px;
+}
+.phone-topbar {
+  background: var(--dark-950);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--dark-border);
+}
+.phone-topbar-title {
+  font-family: var(--font-display);
+  font-size: 14px; font-weight: 700;
+  color: var(--text-primary);
+}
+.phone-topbar-title span { color: var(--amber-500); }
+.phone-content { padding: 12px; }
+
+/* ═══════════════════════════════════════════════
+   ICON GRID
+═══════════════════════════════════════════════ */
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+.icon-item {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 8px;
+  padding: 16px 8px;
+  background: var(--dark-800);
+  border: 1px solid var(--dark-border);
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.icon-item:hover { border-color: var(--amber-700); background: var(--dark-700); }
+.icon-name { font-family: var(--font-mono); font-size: 9px; color: var(--text-muted); text-align: center; }
+.divider { border: none; border-top: 1px solid var(--dark-border); margin: 32px 0; }
+</style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <svg width="26" height="26" viewBox="0 0 40 40" fill="none">
+      <rect width="40" height="40" rx="8" fill="rgba(245,158,11,0.1)"/>
+      <path d="M20 8a12 12 0 0 1 0 24 12 12 0 0 1 0-24z" stroke="#F59E0B" stroke-width="2" fill="none"/>
+      <circle cx="20" cy="20" r="3" fill="#F59E0B"/>
+      <path d="M20 8v4M20 28v4M8 20h4M28 20h4" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+      <path d="M11.5 11.5l2.8 2.8M25.7 25.7l2.8 2.8M11.5 28.5l2.8-2.8M25.7 14.3l2.8-2.8" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <span class="sidebar-brand-text">Event<span>Gear</span></span>
+  </div>
+
+  <span class="sidebar-section-label">Fundamentos</span>
+  <a href="#logo" class="active"><span class="dot"></span>01 · Logo & Ícone</a>
+  <a href="#cores"><span class="dot"></span>02 · Cores</a>
+  <a href="#tipografia"><span class="dot"></span>03 · Tipografia</a>
+  <a href="#espacamento"><span class="dot"></span>04 · Espaçamento</a>
+
+  <span class="sidebar-section-label">Componentes</span>
+  <a href="#botoes"><span class="dot"></span>05 · Botões</a>
+  <a href="#status"><span class="dot"></span>06 · Status & Badges</a>
+  <a href="#cards"><span class="dot"></span>07 · Cards</a>
+  <a href="#checklist"><span class="dot"></span>08 · Checklist</a>
+  <a href="#qrcode"><span class="dot"></span>09 · QR Code</a>
+  <a href="#forms"><span class="dot"></span>10 · Formulários</a>
+  <a href="#alerts"><span class="dot"></span>11 · Alertas</a>
+  <a href="#icons"><span class="dot"></span>12 · Ícones</a>
+
+  <span class="sidebar-section-label">Telas</span>
+  <a href="#navbar"><span class="dot"></span>13 · App Header</a>
+  <a href="#dashboard"><span class="dot"></span>14 · Dashboard</a>
+  <a href="#mobile"><span class="dot"></span>15 · Mobile (PWA)</a>
+
+  <span class="sidebar-section-label">Linguagem</span>
+  <a href="#voz"><span class="dot"></span>16 · Tom de Voz</a>
+  <a href="#codigo"><span class="dot"></span>17 · Código</a>
+
+  <div style="margin-top: auto; padding-top: 24px; border-top: 1px solid var(--dark-border);">
+    <div style="font-family: var(--font-mono); font-size: 9px; color: var(--text-muted); letter-spacing: 1px;">SCANTELBURYDEVS<br>v1.0 · 2026</div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- ══ CAPA ══ -->
+  <div style="margin-bottom: 80px;">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+      <span style="font-family: var(--font-mono); font-size: 10px; color: var(--amber-600); background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); padding: 4px 10px; border-radius: 4px;">IDENTIDADE VISUAL · v1.0</span>
+      <span style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);">ScantelburyDevs · 2026</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+      <svg width="64" height="64" viewBox="0 0 40 40" fill="none">
+        <rect width="40" height="40" rx="10" fill="rgba(245,158,11,0.08)" stroke="rgba(245,158,11,0.25)" stroke-width="1"/>
+        <path d="M20 6a14 14 0 0 1 0 28 14 14 0 0 1 0-28z" stroke="#F59E0B" stroke-width="2" fill="none"/>
+        <circle cx="20" cy="20" r="4" fill="#F59E0B"/>
+        <path d="M20 6v5M20 29v5M6 20h5M29 20h5" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+        <path d="M10.1 10.1l3.5 3.5M26.4 26.4l3.5 3.5M10.1 29.9l3.5-3.5M26.4 13.6l3.5-3.5" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <h1 style="font-family: var(--font-display); font-size: 52px; font-weight: 800; letter-spacing: 1px; color: var(--text-primary); line-height: 1;">Event<span style="color: var(--amber-500);">Gear</span></h1>
+        <div style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px;">Sistema de Controle de Equipamentos para Eventos</div>
+      </div>
+    </div>
+    <p style="font-size: 15px; color: var(--text-secondary); max-width: 540px; line-height: 1.7;">Guia completo de identidade visual — dark-first, mobile-first. Desenvolvido para operadores de campo em ambientes de evento: palcos, depósitos, backstage.</p>
+    <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
+      <span class="badge badge-available">PWA Mobile-first</span>
+      <span class="badge badge-allocated">Dark mode nativo</span>
+      <span class="badge badge-maintenance">17 seções</span>
+      <span class="badge" style="background: rgba(139,92,246,0.12); color: #C4B5FD; border: 1px solid rgba(139,92,246,0.2);">QR Code nativo</span>
+    </div>
+  </div>
+
+  <!-- ══ 01 · LOGO ══ -->
+  <section class="section" id="logo">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">Logo &amp; Ícone</span>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-label">Versão principal</div>
+      <div class="preview">
+        <div class="preview-header">
+          <div class="preview-header-dot" style="background: #F87171;"></div>
+          <div class="preview-header-dot" style="background: var(--amber-500);"></div>
+          <div class="preview-header-dot" style="background: var(--status-available);"></div>
+          <span class="preview-title">eventgear — logo principal dark</span>
+        </div>
+        <div class="preview-body center" style="background: var(--dark-950); padding: 56px;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <svg width="52" height="52" viewBox="0 0 40 40" fill="none">
+              <path d="M20 4a16 16 0 0 1 0 32 16 16 0 0 1 0-32z" stroke="#F59E0B" stroke-width="2" fill="none"/>
+              <circle cx="20" cy="20" r="5" fill="#F59E0B"/>
+              <path d="M20 4v6M20 30v6M4 20h6M30 20h6" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M8.7 8.7l4.2 4.2M27.1 27.1l4.2 4.2M8.7 31.3l4.2-4.2M27.1 12.9l4.2-4.2" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            <div>
+              <div style="font-family: var(--font-display); font-size: 44px; font-weight: 800; letter-spacing: 1px; color: var(--text-primary); line-height: 1;">Event<span style="color: var(--amber-500);">Gear</span></div>
+              <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); letter-spacing: 3px; text-transform: uppercase; margin-top: 4px;">Equipment Control · ScantelburyDevs</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="note note-amber"><strong>Uso:</strong> App header, tela de login, splash screen, og:image, e-mails transacionais. Sempre dark por padrão.</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-label">Versão light (impressão / etiquetas)</div>
+      <div class="logo-versions-grid">
+        <div class="logo-version-card">
+          <div class="logo-version-light">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <path d="M20 4a16 16 0 0 1 0 32 16 16 0 0 1 0-32z" stroke="#D97706" stroke-width="2" fill="none"/>
+                <circle cx="20" cy="20" r="5" fill="#D97706"/>
+                <path d="M20 4v6M20 30v6M4 20h6M30 20h6" stroke="#D97706" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M8.7 8.7l4.2 4.2M27.1 27.1l4.2 4.2M8.7 31.3l4.2-4.2M27.1 12.9l4.2-4.2" stroke="#D97706" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+              <span style="font-family: var(--font-display); font-size: 32px; font-weight: 800; letter-spacing: 0.5px; color: #0F172A; line-height: 1;">Event<span style="color: var(--amber-600);">Gear</span></span>
+            </div>
+          </div>
+          <div class="logo-version-footer">Versão light · fundo branco · impressão e PDF</div>
+        </div>
+        <div class="logo-version-card">
+          <div class="logo-version-dark" style="background: #111;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <svg width="36" height="36" viewBox="0 0 40 40" fill="none">
+                <path d="M20 4a16 16 0 0 1 0 32 16 16 0 0 1 0-32z" stroke="#F59E0B" stroke-width="2" fill="none"/>
+                <circle cx="20" cy="20" r="5" fill="#F59E0B"/>
+                <path d="M20 4v6M20 30v6M4 20h6M30 20h6" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+              <span style="font-family: var(--font-display); font-size: 28px; font-weight: 800; letter-spacing: 0.5px; color: white; line-height: 1;">Event<span style="color: var(--amber-500);">Gear</span></span>
+            </div>
+          </div>
+          <div class="logo-version-footer">Versão compacta · sem tagline · app header mobile</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-label">Ícone isolado — tamanhos</div>
+      <div class="preview">
+        <div class="preview-body" style="display: flex; align-items: center; gap: 32px; flex-wrap: wrap;">
+          <!-- 80px -->
+          <div style="text-align: center;">
+            <div style="width: 80px; height: 80px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px;">
+              <svg width="52" height="52" viewBox="0 0 40 40" fill="none">
+                <path d="M20 4a16 16 0 0 1 0 32 16 16 0 0 1 0-32z" stroke="#F59E0B" stroke-width="2" fill="none"/>
+                <circle cx="20" cy="20" r="5" fill="#F59E0B"/>
+                <path d="M20 4v6M20 30v6M4 20h6M30 20h6" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M8.7 8.7l4.2 4.2M27.1 27.1l4.2 4.2M8.7 31.3l4.2-4.2M27.1 12.9l4.2-4.2" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);">80px · App Store / Play Store</span>
+          </div>
+          <!-- 48px -->
+          <div style="text-align: center;">
+            <div style="width: 48px; height: 48px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px;">
+              <svg width="30" height="30" viewBox="0 0 40 40" fill="none">
+                <path d="M20 4a16 16 0 0 1 0 32 16 16 0 0 1 0-32z" stroke="#F59E0B" stroke-width="2" fill="none"/>
+                <circle cx="20" cy="20" r="5" fill="#F59E0B"/>
+                <path d="M20 4v6M20 30v6M4 20h6M30 20h6" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);">48px · Favicon / PWA</span>
+          </div>
+          <!-- 32px -->
+          <div style="text-align: center;">
+            <div style="width: 32px; height: 32px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px;">
+              <svg width="20" height="20" viewBox="0 0 40 40" fill="none">
+                <path d="M20 4a16 16 0 0 1 0 32 16 16 0 0 1 0-32z" stroke="#F59E0B" stroke-width="2.5" fill="none"/>
+                <circle cx="20" cy="20" r="6" fill="#F59E0B"/>
+              </svg>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);">32px · Tab bar</span>
+          </div>
+          <!-- 20px -->
+          <div style="text-align: center;">
+            <div style="width: 20px; height: 20px; background: var(--amber-500); border-radius: 5px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center;">
+              <svg width="12" height="12" viewBox="0 0 40 40" fill="none">
+                <circle cx="20" cy="20" r="8" fill="white"/>
+              </svg>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);">20px · Inline / list</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Donts -->
+    <div class="subsection">
+      <div class="subsection-label">Proibições</div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+        <div style="border: 1.5px solid rgba(248,113,113,0.3); border-radius: var(--r-lg); overflow: hidden;">
+          <div style="background: rgba(248,113,113,0.06); padding: 24px; text-align: center;">
+            <span style="font-family: var(--font-display); font-size: 28px; font-weight: 800; color: var(--amber-500);">EVENTGEAR</span>
+          </div>
+          <div style="padding: 10px 14px; background: var(--dark-800); font-family: var(--font-mono); font-size: 10px; color: #F87171;">✕ Sem ícone / só texto maiúsculo</div>
+        </div>
+        <div style="border: 1.5px solid rgba(248,113,113,0.3); border-radius: var(--r-lg); overflow: hidden;">
+          <div style="background: rgba(248,113,113,0.06); padding: 24px; text-align: center;">
+            <span style="font-family: var(--font-display); font-size: 28px; font-weight: 800; color: #60A5FA;">Event<span style="color: #8B5CF6;">Gear</span></span>
+          </div>
+          <div style="padding: 10px 14px; background: var(--dark-800); font-family: var(--font-mono); font-size: 10px; color: #F87171;">✕ Cores fora da paleta</div>
+        </div>
+        <div style="border: 1.5px solid rgba(248,113,113,0.3); border-radius: var(--r-lg); overflow: hidden;">
+          <div style="background: rgba(248,113,113,0.06); padding: 24px; text-align: center;">
+            <span style="font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--text-primary); background: var(--amber-500); padding: 4px 12px; border-radius: 4px;">EventGear</span>
+          </div>
+          <div style="padding: 10px 14px; background: var(--dark-800); font-family: var(--font-mono); font-size: 10px; color: #F87171;">✕ Fundo sólido sobre wordmark</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 02 · CORES ══ -->
+  <section class="section" id="cores">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">Cores</span>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-label">Paleta âmbar — cor primária da marca</div>
+      <div class="color-row">
+        <div class="color-card"><div class="color-swatch" style="background: #FEF3C7;"></div><div class="color-meta"><div class="color-name">Amber 100</div><div class="color-hex">#FEF3C7</div><div class="color-use">Fundo de alertas âmbar</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background: #FCD34D;"></div><div class="color-meta"><div class="color-name">Amber 300</div><div class="color-hex">#FCD34D</div><div class="color-use">Texto em fundos escuros, icons</div></div></div>
+        <div class="color-card"><div class="color-swatch featured" style="background: #F59E0B;"></div><div class="color-meta"><div class="color-name">Amber 500 ★</div><div class="color-hex">#F59E0B</div><div class="color-use">COR PRINCIPAL — botão primário, ícone, destaques, link ativo</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background: #D97706;"></div><div class="color-meta"><div class="color-name">Amber 600</div><div class="color-hex">#D97706</div><div class="color-use">Hover, versão light, bordas de acento</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background: #92400E;"></div><div class="color-meta"><div class="color-name">Amber 800</div><div class="color-hex">#92400E</div><div class="color-use">Sombras, texto sobre âmbar 500</div></div></div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-label">Superfícies dark</div>
+      <div class="color-row">
+        <div class="color-card"><div class="color-swatch featured" style="background: #060A12;"></div><div class="color-meta"><div class="color-name">Dark 950 ★</div><div class="color-hex">#060A12</div><div class="color-use">App header, sidebar, fundo de modal</div></div></div>
+        <div class="color-card"><div class="color-swatch featured" style="background: #0C1220;"></div><div class="color-meta"><div class="color-name">Dark 900 ★</div><div class="color-hex">#0C1220</div><div class="color-use">Background de página — cor base do app</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background: #111C2E;"></div><div class="color-meta"><div class="color-name">Dark 800</div><div class="color-hex">#111C2E</div><div class="color-use">Cards, painéis, listas</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background: #17253C;"></div><div class="color-meta"><div class="color-name">Dark 700</div><div class="color-hex">#17253C</div><div class="color-use">Hover de cards, inputs, ícone bg</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background: #1E304D;"></div><div class="color-meta"><div class="color-name">Dark 600</div><div class="color-hex">#1E304D</div><div class="color-use">Bordas de hover, elementos ativos</div></div></div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-label">Status de material (semântico — crítico para UX)</div>
+      <div class="status-palette">
+        <div class="status-card">
+          <div class="status-swatch" style="background: var(--status-available-bg); border-bottom: 1px solid rgba(34,197,94,0.2);"></div>
+          <div class="status-meta">
+            <div class="color-name" style="color: var(--status-available);">AVAILABLE</div>
+            <div class="color-hex">#22C55E</div>
+            <div class="color-use">Material disponível no estoque, pronto para alocação</div>
+          </div>
+        </div>
+        <div class="status-card">
+          <div class="status-swatch" style="background: var(--status-allocated-bg); border-bottom: 1px solid rgba(245,158,11,0.2);"></div>
+          <div class="status-meta">
+            <div class="color-name" style="color: var(--status-allocated);">ALLOCATED</div>
+            <div class="color-hex">#F59E0B</div>
+            <div class="color-use">Em uso em algum evento — não disponível</div>
+          </div>
+        </div>
+        <div class="status-card">
+          <div class="status-swatch" style="background: var(--status-maintenance-bg); border-bottom: 1px solid rgba(96,165,250,0.2);"></div>
+          <div class="status-meta">
+            <div class="color-name" style="color: var(--status-maintenance);">MAINTENANCE</div>
+            <div class="color-hex">#60A5FA</div>
+            <div class="color-use">Em manutenção — fora de operação temporariamente</div>
+          </div>
+        </div>
+        <div class="status-card">
+          <div class="status-swatch" style="background: var(--status-lost-bg); border-bottom: 1px solid rgba(248,113,113,0.2);"></div>
+          <div class="status-meta">
+            <div class="color-name" style="color: var(--status-lost);">LOST</div>
+            <div class="color-hex">#F87171</div>
+            <div class="color-use">Material perdido ou não retornou do evento</div>
+          </div>
+        </div>
+      </div>
+      <div class="note note-amber" style="margin-top: 12px;"><strong>Regra crítica:</strong> As cores de status de material não podem ser usadas para nenhuma outra finalidade semântica no app. O cérebro do operador de campo deve reconhecer instantaneamente verde = disponível, vermelho = perdido. Nunca use vermelho para alertas informativos — somente para status críticos de equipamento.</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-label">Status de checklist</div>
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+        <div class="color-card"><div class="color-swatch" style="background: rgba(34,197,94,0.12);"></div><div class="color-meta"><div class="color-name" style="color: #22C55E;">CONFIRMED</div><div class="color-hex">#22C55E</div><div class="color-use">Item escaneado e confirmado</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background: rgba(100,116,139,0.15);"></div><div class="color-meta"><div class="color-name" style="color: #94A3B8;">PENDING</div><div class="color-hex">#64748B</div><div class="color-use">Ainda não verificado</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background: rgba(248,113,113,0.12);"></div><div class="color-meta"><div class="color-name" style="color: #F87171;">MISSING</div><div class="color-hex">#F87171</div><div class="color-use">Item não encontrado</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background: rgba(245,158,11,0.12);"></div><div class="color-meta"><div class="color-name" style="color: var(--amber-400);">DAMAGED</div><div class="color-hex">#F59E0B</div><div class="color-use">Retornou com avaria</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 03 · TIPOGRAFIA ══ -->
+  <section class="section" id="tipografia">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">Tipografia</span>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-label">Famílias tipográficas</div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px;">
+        <div class="preview">
+          <div class="preview-body tight">
+            <div style="font-family: var(--font-display); font-size: 32px; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">Barlow Condensed</div>
+            <div style="font-family: var(--font-display); font-size: 14px; color: var(--text-secondary);">ABCDEFGHIJKLMNOP<br>0123456789 · 700/800</div>
+            <div class="note note-amber" style="margin-top: 10px; font-size: 12px;"><strong>Onde:</strong> Logo, títulos de tela, stats do dashboard, nome de eventos, H1.</div>
+          </div>
+        </div>
+        <div class="preview">
+          <div class="preview-body tight">
+            <div style="font-family: var(--font-semi); font-size: 24px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px;">Barlow Semi</div>
+            <div style="font-family: var(--font-semi); font-size: 14px; color: var(--text-secondary);">Navegação, labels de card,<br>botões, subtítulos.</div>
+            <div class="note note-amber" style="margin-top: 10px; font-size: 12px;"><strong>Onde:</strong> Nav items, títulos de card, botões, labels de formulário.</div>
+          </div>
+        </div>
+        <div class="preview">
+          <div class="preview-body tight">
+            <div style="font-family: var(--font-mono); font-size: 18px; font-weight: 500; color: var(--text-primary); margin-bottom: 6px;">JetBrains Mono</div>
+            <div style="font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary);">qty: 12 · status: OK<br>mat-001-A · 2026-05-07</div>
+            <div class="note note-amber" style="margin-top: 10px; font-size: 12px;"><strong>Onde:</strong> IDs de material, QR codes, status codes, dados de API, badges, labels.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-label">Escala tipográfica completa</div>
+      <div class="preview">
+        <div class="preview-body tight">
+          <table class="type-table">
+            <tr>
+              <td><span style="font-family: var(--font-display); font-size: 40px; font-weight: 800; letter-spacing: 0.5px; color: var(--text-primary); line-height: 1;">Festival de Verão 2026</span></td>
+              <td class="type-meta-block" style="width: 220px; padding: 16px;">
+                <div class="type-name">Display / Event Name</div>
+                <div class="type-spec">Barlow Condensed 800 · 40px<br>letter-spacing: 0.5px</div>
+                <div class="type-use">Nome de evento na tela de detalhe, splash screen</div>
+              </td>
+            </tr>
+            <tr>
+              <td><span style="font-family: var(--font-display); font-size: 28px; font-weight: 700; letter-spacing: 0.3px; color: var(--text-primary);">Inventário de Materiais</span></td>
+              <td class="type-meta-block" style="padding: 16px;">
+                <div class="type-name">H1 — Título de tela</div>
+                <div class="type-spec">Barlow Condensed 700 · 28px</div>
+                <div class="type-use">Cabeçalho de cada tela do app</div>
+              </td>
+            </tr>
+            <tr>
+              <td><span style="font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--text-primary);">Caixa de Som JBL PRX 912</span></td>
+              <td class="type-meta-block" style="padding: 16px;">
+                <div class="type-name">H2 — Nome de material / seção</div>
+                <div class="type-spec">Barlow Condensed 700 · 20px</div>
+                <div class="type-use">Nome de equipamento, título de card de material</div>
+              </td>
+            </tr>
+            <tr>
+              <td><span style="font-family: var(--font-semi); font-size: 15px; font-weight: 600; color: var(--text-primary);">Checklist de Saída</span></td>
+              <td class="type-meta-block" style="padding: 16px;">
+                <div class="type-name">H3 — Subsecção / nav</div>
+                <div class="type-spec">Barlow Semi Condensed 600 · 15px</div>
+                <div class="type-use">Tabs de checklist, títulos de grupos de form, nav items</div>
+              </td>
+            </tr>
+            <tr>
+              <td><span style="font-family: var(--font-body); font-size: 14px; color: var(--text-secondary); line-height: 1.6;">Confirme os itens antes da saída. Escaneie o QR Code de cada equipamento ou marque manualmente.</span></td>
+              <td class="type-meta-block" style="padding: 16px;">
+                <div class="type-name">Body — Texto corrido</div>
+                <div class="type-spec">Barlow 400 · 14px · line-height 1.6</div>
+                <div class="type-use">Instruções, descrições, notes de checklist</div>
+              </td>
+            </tr>
+            <tr>
+              <td><span style="font-family: var(--font-display); font-size: 36px; font-weight: 800; color: var(--text-primary); letter-spacing: -1px; line-height: 1;">247</span></td>
+              <td class="type-meta-block" style="padding: 16px;">
+                <div class="type-name">Stat / KPI</div>
+                <div class="type-spec">Barlow Condensed 800 · 36px<br>tracking -1px</div>
+                <div class="type-use">Cards de stat do dashboard (total de itens, eventos, etc.)</div>
+              </td>
+            </tr>
+            <tr>
+              <td><span style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase;">ESTOQUE · 12 UNIDADES</span></td>
+              <td class="type-meta-block" style="padding: 16px;">
+                <div class="type-name">Label / Metadata</div>
+                <div class="type-spec">JetBrains Mono 400 · 10–12px<br>uppercase · letter-spacing 1.5px</div>
+                <div class="type-use">Labels de campo, IDs, status, código de material, badges</div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 04 · ESPAÇAMENTO ══ -->
+  <section class="section" id="espacamento">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-title">Espaçamento</span>
+    </div>
+    <div class="spacing-grid">
+      <div class="spacing-item"><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 4px;"></div></div><div class="spacing-label">s1 · 4px</div><div class="spacing-px">--s1</div><div class="spacing-use">Gap entre ícone e badge dot</div></div>
+      <div class="spacing-item"><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 8px;"></div></div><div class="spacing-label">s2 · 8px</div><div class="spacing-px">--s2</div><div class="spacing-use">Gap entre ícone e texto inline</div></div>
+      <div class="spacing-item"><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 12px;"></div></div><div class="spacing-label">s3 · 12px</div><div class="spacing-px">--s3</div><div class="spacing-use">Gap entre checklist items</div></div>
+      <div class="spacing-item"><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 16px;"></div></div><div class="spacing-label">s4 · 16px</div><div class="spacing-px">--s4</div><div class="spacing-use">Padding interno de card, gap de grid</div></div>
+      <div class="spacing-item"><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 20px;"></div></div><div class="spacing-label">s5 · 20px</div><div class="spacing-px">--s5</div><div class="spacing-use">Padding de card padrão</div></div>
+      <div class="spacing-item"><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 24px;"></div></div><div class="spacing-label">s6 · 24px</div><div class="spacing-px">--s6</div><div class="spacing-use">Padding de modal, gap de seção</div></div>
+      <div class="spacing-item"><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 32px;"></div></div><div class="spacing-label">s8 · 32px</div><div class="spacing-px">--s8</div><div class="spacing-use">Margin entre blocos, padding lateral</div></div>
+      <div class="spacing-item"><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 48px;"></div></div><div class="spacing-label">s12 · 48px</div><div class="spacing-px">--s12</div><div class="spacing-use">Padding de tela mobile, section gap</div></div>
+    </div>
+    <div class="note note-amber" style="margin-top: 20px;"><strong>Regra de campo:</strong> Elementos de ação no mobile (botões, checklist items) têm altura mínima de 48px — zona de toque segura para uso com luva ou dedo impreciso no ambiente de evento.</div>
+  </section>
+
+  <!-- ══ 05 · BOTÕES ══ -->
+  <section class="section" id="botoes">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-title">Botões</span>
+    </div>
+    <div class="subsection">
+      <div class="subsection-label">Hierarquia de ações</div>
+      <div class="preview">
+        <div class="preview-body">
+          <div class="btn-row" style="margin-bottom: 16px;">
+            <button class="btn btn-primary btn-lg">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              Confirmar Saída
+            </button>
+            <button class="btn btn-secondary btn-lg">Ver Materiais</button>
+            <button class="btn btn-ghost btn-lg">Cancelar</button>
+          </div>
+          <div class="btn-row" style="margin-bottom: 16px;">
+            <button class="btn btn-primary btn-md">Alocar Material</button>
+            <button class="btn btn-secondary btn-md">Editar Evento</button>
+            <button class="btn btn-ghost btn-md">Voltar</button>
+            <button class="btn btn-danger btn-md">Remover</button>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary btn-sm">Salvar</button>
+            <button class="btn btn-secondary btn-sm">Detalhes</button>
+            <button class="btn btn-ghost btn-sm">Fechar</button>
+            <button class="btn btn-danger btn-sm">Deletar</button>
+          </div>
+        </div>
+      </div>
+      <div class="note note-amber"><strong>Primário (âmbar):</strong> Ação principal da tela — confirmar saída, criar evento, salvar. Texto dark sobre fundo âmbar. Máximo 1 por tela.<br><strong>Secundário:</strong> Ação alternativa relevante. Ghost: cancelar, voltar. Danger: remoção com confirmação.</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-label">Botão especial — Scan QR Code</div>
+      <div class="preview">
+        <div class="preview-body">
+          <div class="btn-row">
+            <button class="btn-qr">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="5" y="5" width="3" height="3" fill="currentColor"/><rect x="16" y="5" width="3" height="3" fill="currentColor"/><rect x="5" y="16" width="3" height="3" fill="currentColor"/><path d="M14 14h2v2h-2zM16 16h2v2h-2zM18 14h2v2h-2zM14 18h4v2h-4z" fill="currentColor"/></svg>
+              Escanear QR Code
+            </button>
+            <span style="font-size: 13px; color: var(--text-muted);">ou marcar manualmente →</span>
+          </div>
+        </div>
+      </div>
+      <div class="note note-amber"><strong>Esse botão é o CTA mais crítico do app.</strong> Aparece em destaque na tela de checklist de saída e retorno. Borda âmbar glow, tamanho generoso (48px altura mínima), sempre com ícone de QR à esquerda. Em mobile ocupa 100% da largura.</div>
+    </div>
+  </section>
+
+  <!-- ══ 06 · STATUS & BADGES ══ -->
+  <section class="section" id="status">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <span class="section-title">Status &amp; Badges</span>
+    </div>
+    <div class="subsection">
+      <div class="subsection-label">Status de material</div>
+      <div class="preview">
+        <div class="preview-body">
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+            <span class="badge badge-available">Available</span>
+            <span class="badge badge-allocated">Allocated</span>
+            <span class="badge badge-maintenance">Maintenance</span>
+            <span class="badge badge-lost">Lost</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+            <span class="badge badge-event">In Progress</span>
+            <span class="badge badge-event" style="background: rgba(100,116,139,0.12); color: #94A3B8; border-color: rgba(100,116,139,0.2);">Planned</span>
+            <span class="badge badge-available">Completed</span>
+            <span class="badge badge-lost">Cancelled</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="subsection">
+      <div class="subsection-label">Badges de role de usuário</div>
+      <div class="preview">
+        <div class="preview-body">
+          <div style="display: flex; gap: 10px;">
+            <span class="badge badge-admin">Admin</span>
+            <span class="badge badge-operator">Operator</span>
+          </div>
+        </div>
+      </div>
+      <div class="note note-amber"><strong>Regra:</strong> Badges sempre em maiúsculo, fonte mono. Nunca use emoji dentro de badge. O ponto ● antes do texto é sempre a cor do status. Use em listas de materiais, cabeçalho de cards, linhas de tabela.</div>
+    </div>
+  </section>
+
+  <!-- ══ 07 · CARDS ══ -->
+  <section class="section" id="cards">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <span class="section-title">Cards</span>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-label">Cards de material (grid do inventário)</div>
+      <div class="material-cards-grid">
+        <div class="material-card">
+          <div class="material-card-header">
+            <div>
+              <div class="material-card-title">Caixa JBL PRX 912</div>
+              <div class="material-card-sub">Som · Série A</div>
+            </div>
+            <span class="badge badge-available">Available</span>
+          </div>
+          <div style="display: flex; align-items: flex-end; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--dark-border);">
+            <div>
+              <div class="material-card-qty">8</div>
+              <div class="material-card-qty-label">unidades</div>
+            </div>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);">MAT-001</div>
+          </div>
+        </div>
+        <div class="material-card" style="border-color: rgba(245,158,11,0.2);">
+          <div class="material-card-header">
+            <div>
+              <div class="material-card-title">Mesa Yamaha CL5</div>
+              <div class="material-card-sub">Áudio · Pro Series</div>
+            </div>
+            <span class="badge badge-allocated">Allocated</span>
+          </div>
+          <div style="display: flex; align-items: flex-end; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--dark-border);">
+            <div>
+              <div class="material-card-qty" style="color: var(--amber-400);">2</div>
+              <div class="material-card-qty-label">unidades</div>
+            </div>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);">MAT-002</div>
+          </div>
+        </div>
+        <div class="material-card">
+          <div class="material-card-header">
+            <div>
+              <div class="material-card-title">Moving Head Robe</div>
+              <div class="material-card-sub">Iluminação · 300W</div>
+            </div>
+            <span class="badge badge-maintenance">Maintenance</span>
+          </div>
+          <div style="display: flex; align-items: flex-end; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--dark-border);">
+            <div>
+              <div class="material-card-qty" style="color: var(--status-maintenance);">1</div>
+              <div class="material-card-qty-label">unidades</div>
+            </div>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);">MAT-015</div>
+          </div>
+        </div>
+      </div>
+      <div class="note note-amber" style="margin-top: 12px;"><strong>Card de material:</strong> Sempre mostra nome, categoria, quantidade e status. A cor do número de quantidade espelha o status (verde se available, âmbar se allocated, azul se maintenance, vermelho se lost). Border color sutil na borda quando allocated.</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-label">Cards de evento</div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+        <div class="event-card in-progress">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+            <span class="badge badge-event">In Progress</span>
+            <span style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);">EVT-042</span>
+          </div>
+          <div class="event-card-name">Rock in Rio SP · Palco Principal</div>
+          <div class="event-card-meta">
+            <span>📅 07–09 Maio 2026</span>
+            <span>📍 São Paulo, SP</span>
+          </div>
+          <div class="event-card-stat">
+            <span class="event-card-stat-label">Materiais alocados</span>
+            <span class="event-card-stat-val" style="color: var(--amber-400);">47 itens</span>
+          </div>
+          <div class="event-card-stat">
+            <span class="event-card-stat-label">Checklist saída</span>
+            <span class="event-card-stat-val" style="color: var(--status-available);">100% ✓</span>
+          </div>
+          <div class="event-card-stat">
+            <span class="event-card-stat-label">Retorno</span>
+            <span class="event-card-stat-val" style="color: var(--text-muted);">Pendente</span>
+          </div>
+        </div>
+        <div class="event-card planned">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+            <span class="badge" style="background: rgba(100,116,139,0.12); color: #94A3B8; border: 1px solid rgba(100,116,139,0.2); font-family: var(--font-mono); font-size: 11px; padding: 4px 10px; border-radius: 4px; text-transform: uppercase;">● Planned</span>
+            <span style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);">EVT-043</span>
+          </div>
+          <div class="event-card-name">Carnaval BH · Trio 2</div>
+          <div class="event-card-meta">
+            <span>📅 14–17 Fev 2027</span>
+            <span>📍 BH, MG</span>
+          </div>
+          <div class="event-card-stat">
+            <span class="event-card-stat-label">Materiais alocados</span>
+            <span class="event-card-stat-val">12 itens</span>
+          </div>
+          <div class="event-card-stat">
+            <span class="event-card-stat-label">Checklist</span>
+            <span class="event-card-stat-val" style="color: var(--text-muted);">Não iniciado</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 08 · CHECKLIST ══ -->
+  <section class="section" id="checklist">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <span class="section-title">Checklist</span>
+    </div>
+    <div class="subsection">
+      <div class="subsection-label">Lista de itens — checklist de saída</div>
+      <div class="preview">
+        <div class="preview-body tight">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <div>
+              <div style="font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--text-primary);">Checklist de Saída</div>
+              <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-top: 2px;">ROCK IN RIO SP · 07 MAIO 2026</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-family: var(--font-display); font-size: 28px; font-weight: 800; color: var(--status-available);">3/5</div>
+              <div style="font-size: 11px; color: var(--text-muted);">confirmados</div>
+            </div>
+          </div>
+
+          <div class="checklist-item" style="border-color: rgba(34,197,94,0.2);">
+            <div class="checklist-icon confirmed">✓</div>
+            <div class="checklist-name">Caixa JBL PRX 912</div>
+            <div class="checklist-qty">×8</div>
+            <div class="checklist-status confirmed">Confirmed</div>
+          </div>
+          <div class="checklist-item" style="border-color: rgba(34,197,94,0.2);">
+            <div class="checklist-icon confirmed">✓</div>
+            <div class="checklist-name">Mesa Yamaha CL5</div>
+            <div class="checklist-qty">×2</div>
+            <div class="checklist-status confirmed">Confirmed</div>
+          </div>
+          <div class="checklist-item">
+            <div class="checklist-icon pending" style="color: var(--text-muted);">○</div>
+            <div class="checklist-name">Moving Head Robe 300</div>
+            <div class="checklist-qty">×12</div>
+            <div class="checklist-status pending">Pending</div>
+          </div>
+          <div class="checklist-item" style="border-color: rgba(248,113,113,0.2);">
+            <div class="checklist-icon missing" style="color: var(--status-lost);">✕</div>
+            <div class="checklist-name">Cabo XLR 20m</div>
+            <div class="checklist-qty">×24</div>
+            <div class="checklist-status missing">Missing</div>
+          </div>
+          <div class="checklist-item" style="border-color: rgba(245,158,11,0.2);">
+            <div class="checklist-icon damaged" style="color: var(--amber-400);">⚠</div>
+            <div class="checklist-name">Pedestal Girafa</div>
+            <div class="checklist-qty">×4</div>
+            <div class="checklist-status damaged">Damaged</div>
+          </div>
+        </div>
+      </div>
+      <div class="note note-amber"><strong>Altura mínima de item:</strong> 56px — garantia de toque preciso em campo. O ícone à esquerda é a âncora visual do estado. O status badge à direita usa fonte mono uppercase. Itens "missing" e "damaged" têm borda colorida para identificação rápida em listas longas.</div>
+    </div>
+  </section>
+
+  <!-- ══ 09 · QR CODE ══ -->
+  <section class="section" id="qrcode">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <span class="section-title">QR Code</span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: start;">
+      <div class="subsection" style="margin-bottom: 0;">
+        <div class="subsection-label">Scanner (PWA · html5-qrcode)</div>
+        <div class="qr-scanner-mock">
+          <div class="qr-viewport">
+            <div class="qr-corner tl"></div>
+            <div class="qr-corner tr"></div>
+            <div class="qr-corner bl"></div>
+            <div class="qr-corner br"></div>
+            <div class="qr-scan-line"></div>
+            <div class="qr-icon-center">
+              <svg width="80" height="80" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="#F59E0B" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="#F59E0B" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="#F59E0B" stroke-width="1.5"/></svg>
+            </div>
+          </div>
+          <div class="qr-label">Posicione o QR Code</div>
+          <div class="qr-hint">Câmera traseira ativa · flash disponível</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="subsection">
+          <div class="subsection-label">Etiqueta física (impressão em PDF)</div>
+          <div style="background: var(--dark-800); border: 1px solid var(--dark-border); border-radius: var(--r-xl); padding: 20px; display: inline-block;">
+            <div class="qr-label-card">
+              <div class="qr-label-qr">
+                <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                  <rect x="4" y="4" width="22" height="22" rx="2" fill="#0F172A"/>
+                  <rect x="38" y="4" width="22" height="22" rx="2" fill="#0F172A"/>
+                  <rect x="4" y="38" width="22" height="22" rx="2" fill="#0F172A"/>
+                  <rect x="9" y="9" width="12" height="12" rx="1" fill="white"/>
+                  <rect x="43" y="9" width="12" height="12" rx="1" fill="white"/>
+                  <rect x="9" y="43" width="12" height="12" rx="1" fill="white"/>
+                  <rect x="14" y="14" width="2" height="2" fill="#0F172A"/>
+                  <rect x="48" y="14" width="2" height="2" fill="#0F172A"/>
+                  <rect x="14" y="48" width="2" height="2" fill="#0F172A"/>
+                  <rect x="38" y="38" width="4" height="4" fill="#0F172A"/>
+                  <rect x="44" y="38" width="4" height="4" fill="#0F172A"/>
+                  <rect x="50" y="38" width="4" height="4" fill="#0F172A"/>
+                  <rect x="38" y="44" width="4" height="4" fill="#0F172A"/>
+                  <rect x="44" y="50" width="4" height="4" fill="#0F172A"/>
+                  <rect x="50" y="50" width="4" height="4" fill="#0F172A"/>
+                </svg>
+              </div>
+              <div class="qr-label-info">
+                <div class="qr-label-product">EventGear</div>
+                <div class="qr-label-name">Caixa JBL PRX 912</div>
+                <div class="qr-label-id">MAT-001-A · Série A</div>
+                <div class="qr-label-id" style="color: #64748B; margin-top: 2px;">eventgear.com.br</div>
+              </div>
+            </div>
+          </div>
+          <div class="note note-amber" style="max-width: 280px;"><strong>Etiqueta:</strong> Fundo branco para impressão. QR + nome + ID do material + domínio. Gerada via PDFKit no endpoint GET /materials/:id/qrcode. Adesivo recomendado: 8×4cm.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 10 · FORMULÁRIOS ══ -->
+  <section class="section" id="forms">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <span class="section-title">Formulários</span>
+    </div>
+    <div class="preview">
+      <div class="preview-header">
+        <div class="preview-header-dot" style="background: #F87171;"></div>
+        <div class="preview-header-dot" style="background: var(--amber-500);"></div>
+        <div class="preview-header-dot" style="background: var(--status-available);"></div>
+        <span class="preview-title">Cadastrar material · estados de input</span>
+      </div>
+      <div class="preview-body tight" style="max-width: 440px;">
+        <div class="field-group">
+          <label class="field-label">Nome do equipamento</label>
+          <input class="field-input" type="text" placeholder="Ex: Caixa JBL PRX 912">
+          <span class="field-hint">Nome completo com modelo e fabricante</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="field-group">
+            <label class="field-label">Categoria</label>
+            <select class="field-select">
+              <option>Som</option>
+              <option>Iluminação</option>
+              <option>Estrutura</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Qtd. total</label>
+            <input class="field-input success" type="number" value="8">
+            <span class="field-success">✓ Quantidade válida</span>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Número de série</label>
+          <input class="field-input error" type="text" value="PRX-912-##INVALIDO">
+          <span class="field-error">Formato inválido. Use apenas letras, números e hífens.</span>
+        </div>
+      </div>
+    </div>
+    <div class="note note-amber"><strong>Labels:</strong> Sempre em mono uppercase com letter-spacing — identidade técnica. <strong>Foco:</strong> Borda âmbar + glow ring 3px. <strong>Altura de input:</strong> mínimo 44px mobile. Campos de número usam teclado numérico nativo no mobile (inputmode="numeric").</div>
+  </section>
+
+  <!-- ══ 11 · ALERTAS ══ -->
+  <section class="section" id="alerts">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <span class="section-title">Alertas</span>
+    </div>
+    <div class="preview">
+      <div class="preview-body tight">
+        <div class="alert amber">
+          <div class="alert-icon">⚠</div>
+          <div>
+            <div class="alert-title">Checklist incompleto — 3 itens pendentes</div>
+            <div class="alert-body">Confirme todos os materiais antes de encerrar a saída do evento.</div>
+          </div>
+        </div>
+        <div class="alert green">
+          <div class="alert-icon">✓</div>
+          <div>
+            <div class="alert-title">Checklist de saída concluído</div>
+            <div class="alert-body">47 itens confirmados. Evento iniciado às 14:32.</div>
+          </div>
+        </div>
+        <div class="alert red">
+          <div class="alert-icon">✕</div>
+          <div>
+            <div class="alert-title">3 itens não retornaram — Mesa CL5 · 2× Cabo XLR · 1× Pedestal</div>
+            <div class="alert-body">Registre observações e notifique o responsável do evento.</div>
+          </div>
+        </div>
+        <div class="alert blue">
+          <div class="alert-icon">ℹ</div>
+          <div>
+            <div class="alert-title">Material em manutenção</div>
+            <div class="alert-body">Moving Head Robe 300 não está disponível para alocação até 15/05.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="note note-amber"><strong>Alertas âmbar:</strong> Avisos de ação necessária (checklist incompleto, evento prestes a encerrar). <strong>Vermelho:</strong> Itens não retornados — crítico. <strong>Verde:</strong> Confirmações de conclusão. <strong>Azul:</strong> Informativos neutros (manutenção, status da API).</div>
+  </section>
+
+  <!-- ══ 12 · ÍCONES ══ -->
+  <section class="section" id="icons">
+    <div class="section-header">
+      <span class="section-num">12</span>
+      <span class="section-title">Ícones</span>
+    </div>
+    <div class="subsection-label">Biblioteca: Lucide Icons (usada via shadcn/ui)</div>
+    <div class="icon-grid">
+      <div class="icon-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="5" y="5" width="3" height="3" fill="#F59E0B" stroke="none"/><rect x="16" y="5" width="3" height="3" fill="#F59E0B" stroke="none"/><rect x="5" y="16" width="3" height="3" fill="#F59E0B" stroke="none"/><path d="M14 14h2v2h-2zM16 16h2v2h-2zM18 14h2v2h-2zM14 18h4v2h-4z" fill="#F59E0B" stroke="none"/></svg>
+        <span class="icon-name">qr-code</span>
+      </div>
+      <div class="icon-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        <span class="icon-name">arrow-right</span>
+      </div>
+      <div class="icon-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+        <span class="icon-name">check-circle</span>
+      </div>
+      <div class="icon-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+        <span class="icon-name">alert-triangle</span>
+      </div>
+      <div class="icon-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <span class="icon-name">heart</span>
+      </div>
+      <div class="icon-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        <span class="icon-name">monitor</span>
+      </div>
+      <div class="icon-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v5M15 4v5"/></svg>
+        <span class="icon-name">calendar</span>
+      </div>
+      <div class="icon-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="icon-name">users</span>
+      </div>
+      <div class="icon-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        <span class="icon-name">download</span>
+      </div>
+      <div class="icon-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span class="icon-name">file</span>
+      </div>
+      <div class="icon-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <span class="icon-name">search</span>
+      </div>
+      <div class="icon-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span class="icon-name">settings</span>
+      </div>
+    </div>
+    <div class="note note-amber" style="margin-top: 16px;"><strong>Tamanhos:</strong> 16px inline, 20px em cards e listas, 24px em botões de ação. Stroke-width sempre 1.5. Cor padrão: #94A3B8 (text-secondary). Ícones ativos/destacados: var(--amber-500).</div>
+  </section>
+
+  <!-- ══ 13 · NAVBAR ══ -->
+  <section class="section" id="navbar">
+    <div class="section-header">
+      <span class="section-num">13</span>
+      <span class="section-title">App Header</span>
+    </div>
+    <div class="preview" style="overflow: visible;">
+      <div class="preview-header">
+        <div class="preview-header-dot" style="background: #F87171;"></div>
+        <div class="preview-header-dot" style="background: var(--amber-500);"></div>
+        <div class="preview-header-dot" style="background: var(--status-available);"></div>
+        <span class="preview-title">app header — desktop</span>
+      </div>
+      <div>
+        <div class="app-header" style="border-radius: 0;">
+          <div class="app-header-brand">
+            <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
+              <path d="M20 4a16 16 0 0 1 0 32 16 16 0 0 1 0-32z" stroke="#F59E0B" stroke-width="2" fill="none"/>
+              <circle cx="20" cy="20" r="5" fill="#F59E0B"/>
+              <path d="M20 4v6M20 30v6M4 20h6M30 20h6" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+            Event<span>Gear</span>
+          </div>
+          <nav class="app-header-nav">
+            <a class="nav-item active">Materiais</a>
+            <a class="nav-item">Eventos</a>
+            <a class="nav-item">Checklist</a>
+            <a class="nav-item">Relatórios</a>
+          </nav>
+          <div class="app-header-right">
+            <button class="btn btn-primary btn-sm">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/></svg>
+              Escanear
+            </button>
+            <div class="user-avatar">CS</div>
+          </div>
+        </div>
+        <div style="background: var(--dark-900); padding: 8px 20px; border-bottom: 1px solid var(--dark-border);">
+          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); letter-spacing: 1px;">MATERIAIS / INVENTÁRIO / CAIXA JBL PRX 912</div>
+        </div>
+      </div>
+    </div>
+    <div class="note note-amber" style="margin-top: 12px;"><strong>Header:</strong> dark-950 · height 56px. Breadcrumb abaixo em fonte mono. Botão "Escanear" sempre visível no header — é a ação global mais usada no campo. Avatar exibe iniciais do usuário.</div>
+  </section>
+
+  <!-- ══ 14 · DASHBOARD ══ -->
+  <section class="section" id="dashboard">
+    <div class="section-header">
+      <span class="section-num">14</span>
+      <span class="section-title">Dashboard</span>
+    </div>
+    <div class="preview">
+      <div class="preview-body tight">
+        <div style="font-family: var(--font-display); font-size: 14px; font-weight: 600; letter-spacing: 1px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px;">Visão geral · Empresa Som & Luz LTDA</div>
+        <div class="dashboard-stats">
+          <div class="stat-card" style="border-top: 2px solid var(--status-available);">
+            <div class="stat-card-label">Disponíveis</div>
+            <div class="stat-card-value" style="color: var(--status-available);">183</div>
+            <div class="stat-card-sub">itens no estoque</div>
+          </div>
+          <div class="stat-card" style="border-top: 2px solid var(--status-allocated);">
+            <div class="stat-card-label">Alocados</div>
+            <div class="stat-card-value" style="color: var(--status-allocated);">64</div>
+            <div class="stat-card-sub">em 3 eventos</div>
+          </div>
+          <div class="stat-card" style="border-top: 2px solid var(--status-maintenance);">
+            <div class="stat-card-label">Manutenção</div>
+            <div class="stat-card-value" style="color: var(--status-maintenance);">8</div>
+            <div class="stat-card-sub">fora de circulação</div>
+          </div>
+          <div class="stat-card" style="border-top: 2px solid var(--status-lost);">
+            <div class="stat-card-label">Perdidos</div>
+            <div class="stat-card-value" style="color: var(--status-lost);">2</div>
+            <div class="stat-card-sub">registrar ocorrência</div>
+          </div>
+        </div>
+        <div class="alert amber" style="margin-top: 4px;">
+          <div class="alert-icon">⚠</div>
+          <div><div class="alert-title">Rock in Rio SP · Retorno em 2 horas</div><div class="alert-body">Checklist de retorno não iniciado. 47 itens pendentes de confirmação.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="note note-amber"><strong>Cards de stat:</strong> Border-top de 2px na cor do status correspondente. O valor numérico espelha a cor do status. Dashboard sempre abre com os 4 KPIs de status + alertas de evento iminente abaixo. Nunca esconder alertas críticos atrás de tabs.</div>
+  </section>
+
+  <!-- ══ 15 · MOBILE ══ -->
+  <section class="section" id="mobile">
+    <div class="section-header">
+      <span class="section-num">15</span>
+      <span class="section-title">Mobile — PWA</span>
+    </div>
+    <div style="display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap;">
+
+      <!-- Phone 1: Checklist -->
+      <div class="phone-mockup">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-topbar">
+            <div class="phone-topbar-title">Event<span>Gear</span></div>
+            <div style="font-family: var(--font-mono); font-size: 9px; color: var(--text-muted);">OPERATOR</div>
+          </div>
+          <div class="phone-content">
+            <div style="font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">Checklist Saída</div>
+            <div style="font-family: var(--font-mono); font-size: 9px; color: var(--text-muted); margin-bottom: 12px;">ROCK IN RIO · 07 MAI</div>
+            <!-- Mini checklist -->
+            <div style="background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); border-radius: 8px; padding: 8px 10px; display: flex; justify-content: space-between; margin-bottom: 6px;">
+              <span style="font-size: 11px; color: #86EFAC;">JBL PRX 912</span>
+              <span style="font-family: var(--font-mono); font-size: 10px; color: #22C55E;">✓ ×8</span>
+            </div>
+            <div style="background: var(--dark-800); border: 1px solid var(--dark-border); border-radius: 8px; padding: 8px 10px; display: flex; justify-content: space-between; margin-bottom: 6px;">
+              <span style="font-size: 11px; color: var(--text-secondary);">Mesa CL5</span>
+              <span style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);">○ ×2</span>
+            </div>
+            <div style="background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.2); border-radius: 8px; padding: 8px 10px; display: flex; justify-content: space-between; margin-bottom: 14px;">
+              <span style="font-size: 11px; color: #FCA5A5;">Cabo XLR 20m</span>
+              <span style="font-family: var(--font-mono); font-size: 10px; color: #F87171;">✕ ×24</span>
+            </div>
+            <!-- QR Btn mobile -->
+            <div style="background: var(--dark-700); border: 1.5px solid var(--amber-600); border-radius: 10px; padding: 12px; text-align: center; cursor: pointer;">
+              <div style="font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: 1px; color: var(--amber-400); text-transform: uppercase;">⬡ Escanear QR</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2: Material detail -->
+      <div class="phone-mockup">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-topbar">
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);">← Materiais</div>
+            <span class="badge badge-available" style="font-size: 9px; padding: 3px 7px;">Available</span>
+          </div>
+          <div style="background: var(--dark-800); height: 100px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--dark-border);">
+            <div style="text-align: center;">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--text-muted); margin-top: 4px;">SEM FOTO</div>
+            </div>
+          </div>
+          <div class="phone-content">
+            <div style="font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">JBL PRX 912</div>
+            <div style="font-family: var(--font-mono); font-size: 9px; color: var(--amber-600); margin-bottom: 10px;">MAT-001 · SOM</div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--dark-border);">
+              <span style="font-size: 11px; color: var(--text-muted);">Qtd. total</span>
+              <span style="font-family: var(--font-mono); font-size: 11px; color: var(--text-primary); font-weight: 600;">8 un</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--dark-border);">
+              <span style="font-size: 11px; color: var(--text-muted);">Custo rep.</span>
+              <span style="font-family: var(--font-mono); font-size: 11px; color: var(--text-primary);">R$ 18.900</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--dark-border); margin-bottom: 12px;">
+              <span style="font-size: 11px; color: var(--text-muted);">Série</span>
+              <span style="font-family: var(--font-mono); font-size: 11px; color: var(--text-primary);">PRX-912-A</span>
+            </div>
+            <button class="btn btn-primary btn-sm" style="width: 100%; justify-content: center; font-size: 12px;">Imprimir Etiqueta</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex: 1; min-width: 200px;">
+        <div class="note note-amber">
+          <strong>PWA · Regras mobile:</strong><br><br>
+          Toque mínimo: 48px altura<br>
+          Fonte mínima: 12px<br>
+          Bottom navigation fixo para as 4 telas principais<br>
+          Botão "Escanear" sempre acessível (FAB ou header)<br>
+          Offline-first: checklists funcionam sem internet, sincronizam ao reconectar<br>
+          Dark mode obrigatório — nenhuma tela tem fundo branco no app<br>
+          Splash screen: logo central + âmbar sobre dark-950
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 16 · TOM DE VOZ ══ -->
+  <section class="section" id="voz">
+    <div class="section-header">
+      <span class="section-num">16</span>
+      <span class="section-title">Tom de Voz</span>
+    </div>
+    <div class="subsection">
+      <div class="subsection-label">Princípios</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;">
+        <div style="background: var(--dark-800); border: 1px solid var(--dark-border); border-radius: var(--r-lg); padding: 20px; border-left: 3px solid var(--amber-500);">
+          <div style="font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">Direto e operacional</div>
+          <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">O usuário está no backstage, no escuro, provavelmente com pressa. Linguagem é telegráfica, sem rodeios. Verbos no imperativo.</div>
+        </div>
+        <div style="background: var(--dark-800); border: 1px solid var(--dark-border); border-radius: var(--r-lg); padding: 20px; border-left: 3px solid var(--amber-500);">
+          <div style="font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">Preciso nos dados</div>
+          <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">Nunca "alguns itens" — sempre "3 itens". Nunca "recentemente" — sempre "07 Mai 14:32". Dados de equipamento são dinheiro.</div>
+        </div>
+        <div style="background: var(--dark-800); border: 1px solid var(--dark-border); border-radius: var(--r-lg); padding: 20px; border-left: 3px solid var(--status-lost);">
+          <div style="font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">Urgente quando preciso</div>
+          <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">Itens faltando após evento = alerta vermelho, linguagem de urgência. Estoque OK = verde silencioso. Não alarma à toa.</div>
+        </div>
+        <div style="background: var(--dark-800); border: 1px solid var(--dark-border); border-radius: var(--r-lg); padding: 20px; border-left: 3px solid var(--status-maintenance);">
+          <div style="font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">Técnico sem ser chato</div>
+          <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">Operadores entendem o gear. Pode usar termos técnicos (Moving Head, Direct Box, truss), mas nunca código de erro sem tradução.</div>
+        </div>
+      </div>
+    </div>
+    <div class="subsection">
+      <div class="subsection-label">Exemplos práticos</div>
+      <div class="tov-grid">
+        <div class="tov-card">
+          <div class="tov-header good">CTAs de ação</div>
+          <div class="tov-body">"Confirmar saída de 47 itens"<br>"Registrar avaria no Moving Head"<br>"Imprimir etiquetas selecionadas"</div>
+        </div>
+        <div class="tov-card">
+          <div class="tov-header bad">Evitar</div>
+          <div class="tov-body">❌ "Clique para continuar"<br>❌ "Iniciar processo de checklist"<br>❌ "Você tem certeza que deseja prosseguir?"</div>
+        </div>
+        <div class="tov-card">
+          <div class="tov-header good">Status de sucesso</div>
+          <div class="tov-body">"Saída confirmada · 47 itens · 14:32"<br>"Mesa CL5 × 2 — devolvida. Sem avarias."<br>"Evento encerrado. Relatório gerado."</div>
+        </div>
+        <div class="tov-card">
+          <div class="tov-header bad">Evitar</div>
+          <div class="tov-body">❌ "Operação concluída com sucesso!"<br>❌ "Seus dados foram salvos no sistema."<br>❌ "Obrigado por usar o EventGear! 🎉"</div>
+        </div>
+        <div class="tov-card">
+          <div class="tov-header good">Alertas críticos</div>
+          <div class="tov-body">"3 itens não retornaram: Mesa CL5, Cabo XLR ×2, Pedestal"<br>"Moving Head: sem retorno após 48h. Registrar perda?"</div>
+        </div>
+        <div class="tov-card">
+          <div class="tov-header bad">Evitar</div>
+          <div class="tov-body">❌ "Ocorreu um problema com alguns equipamentos"<br>❌ "Por favor verifique o status dos seus materiais"</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 17 · CÓDIGO ══ -->
+  <section class="section" id="codigo">
+    <div class="section-header">
+      <span class="section-num">17</span>
+      <span class="section-title">Blocos de Código</span>
+    </div>
+    <div class="subsection">
+      <div class="subsection-label">Apresentação de código — Prisma Schema e API responses</div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">typescript · checklist service</span>
+          <span class="code-copy">Copiar</span>
+        </div>
+        <div class="code-body">
+<span class="kc">// POST /events/:id/checklist/departure</span>
+<span class="kc">// Confirma item via QR scan ou manualmente</span>
+
+<span class="kw">async</span> <span class="km">confirmChecklistItem</span>(
+  itemId: <span class="kv">string</span>,
+  userId: <span class="kv">string</span>,
+  companyId: <span class="kv">string</span>,
+): Promise&lt;ChecklistItem&gt; {
+
+  <span class="kw">const</span> item = <span class="kw">await</span> <span class="kw">this</span>.prisma.checklistItem.<span class="km">findFirst</span>({
+    where: { id: itemId, companyId },
+    include: { eventMaterial: { include: { material: <span class="kv">true</span> } } },
+  });
+
+  <span class="kw">if</span> (!item) <span class="kw">throw new</span> <span class="km">NotFoundException</span>(<span class="kv">'Item not found'</span>);
+  <span class="kw">if</span> (item.status === <span class="kv">'CONFIRMED'</span>) <span class="kw">return</span> item;
+
+  <span class="kw">return</span> <span class="kw">this</span>.prisma.checklistItem.<span class="km">update</span>({
+    where: { id: itemId },
+    data: {
+      status: <span class="kv">'CONFIRMED'</span>,
+      confirmedById: userId,
+      scannedAt: <span class="kw">new</span> <span class="km">Date</span>(),
+    },
+  });
+}
+        </div>
+      </div>
+      <div class="note note-amber" style="margin-top: 12px;"><strong>Fundo:</strong> dark-950. Header: nome do contexto em mono à esquerda + "Copiar" em âmbar à direita. Keywords: purple, strings: green, métodos: blue, números: red, comentários: slate-500. Usar apenas em documentação técnica interna, README e Swagger — nunca na UI do operador.</div>
+    </div>
+
+    <!-- Closing brand mark -->
+    <div class="divider"></div>
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 0;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+          <path d="M20 4a16 16 0 0 1 0 32 16 16 0 0 1 0-32z" stroke="#F59E0B" stroke-width="2" fill="none"/>
+          <circle cx="20" cy="20" r="5" fill="#F59E0B"/>
+          <path d="M20 4v6M20 30v6M4 20h6M30 20h6" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        <span style="font-family: var(--font-display); font-size: 22px; font-weight: 800; letter-spacing: 0.5px; color: var(--text-primary);">Event<span style="color: var(--amber-500);">Gear</span></span>
+      </div>
+      <div style="text-align: right;">
+        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); letter-spacing: 1.5px;">SCANTELBURYDEVS · BUILD · MIGRATE · INNOVATE</div>
+        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--amber-700); margin-top: 2px;">identidade visual v1.0 · 2026</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+</div>
+</body>
+</html>

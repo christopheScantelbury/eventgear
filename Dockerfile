@@ -37,4 +37,4 @@ COPY --from=builder /app/node_modules                ./node_modules
 EXPOSE 3001
 
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["sh", "-c", "node node_modules/.bin/prisma migrate deploy && node dist/main"]
+CMD ["sh", "-c", "node node_modules/.bin/prisma migrate deploy; node dist/main"]

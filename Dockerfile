@@ -5,15 +5,11 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 
-RUN apk add --no-cache python3 make g++
-
 COPY package*.json ./
 COPY apps/api/package*.json ./apps/api/
 COPY packages/ ./packages/
 
 RUN npm ci --ignore-scripts
-RUN npm rebuild bcrypt || true
-RUN npm rebuild sharp || true
 
 # ── Stage 2: builder ────────────────────────────────────────────────────────
 FROM deps AS builder

@@ -1,8 +1,11 @@
-name: Deploy
+name: Deploy (legacy — desativado)
+
+# DESATIVADO em 2026-05-09: substituído por build-images.yml que builda no
+# runner do GitHub e empurra a imagem pro GHCR. A VPS pequena não dava
+# conta de buildar npm + nest no Easypanel.
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch: {}
 
 jobs:
   # ── 1. Testes — gate obrigatorio antes de qualquer deploy ─────────────────

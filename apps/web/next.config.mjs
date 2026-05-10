@@ -1,4 +1,8 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
 import withSerwistInit from '@serwist/next';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const withSerwist = withSerwistInit({
   swSrc: 'app/sw.ts',
@@ -11,6 +15,9 @@ const withSerwist = withSerwistInit({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  // Em monorepo, aponta a raiz do tracing pra cima de apps/web
+  // pra que node_modules raiz seja incluído no .next/standalone.
+  outputFileTracingRoot: path.join(__dirname, '../../'),
   transpilePackages: ['@eventgear/shared', '@eventgear/ui'],
   images: {
     remotePatterns: [

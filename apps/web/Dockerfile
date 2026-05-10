@@ -28,11 +28,15 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
 
-COPY --from=builder /app/apps/web/public ./public
+# Standalone do Next.js em monorepo gera estrutura preservando workspace path.
+# server.js fica em apps/web/server.js, e .next/static fica em apps/web/.next/static.
+# Por isso copiamos public/ e static/ no caminho aninhado correto.
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./apps/web/public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
 
 USER nextjs
 EXPOSE 3000
 ENV PORT=3000
-CMD ["node", "server.js"]
+ENV HOSTNAME=0.0.0.0
+CMD ["node", "apps/web/server.js"]

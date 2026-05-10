@@ -126,7 +126,9 @@ jobs:
           cache-from: type=gha,scope=web
           cache-to: type=gha,mode=max,scope=web
 
-  # ── Deploy Railway — notifica cada serviço para puxar a nova imagem ─
+  # ── Deploy Railway — força pull da nova imagem via GraphQL ─────────
+  # Usa serviceInstanceRedeploy direto (Railway não expõe deployHookCreate
+  # na API GraphQL pública, então fazemos a mutation manualmente).
   deploy-railway:
     name: Trigger Railway redeploy
     runs-on: ubuntu-latest
@@ -136,20 +138,36 @@ jobs:
     steps:
       - name: Redeploy API (Railway)
         if: needs.build-api.result == 'success'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          ENV_ID: ${{ secrets.RAILWAY_ENV_ID }}
+          SERVICE_ID: ${{ secrets.RAILWAY_API_SERVICE_ID }}
         run: |
-          if [ -n "${{ secrets.RAILWAY_API_DEPLOY_HOOK }}" ]; then
-            curl -f -X POST "${{ secrets.RAILWAY_API_DEPLOY_HOOK }}" \
-              || echo "Railway API deploy hook falhou (non-fatal)"
-          else
-            echo "RAILWAY_API_DEPLOY_HOOK não configurado — skipping"
+          if [ -z "$RAILWAY_TOKEN" ] || [ -z "$SERVICE_ID" ]; then
+            echo "Railway secrets não configurados — skipping"
+            exit 0
           fi
+          curl -f -s -X POST "https://backboard.railway.app/graphql/v2" \
+            -H "Authorization: Bearer $RAILWAY_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\":\"mutation R(\$s:String!,\$e:String!){serviceInstanceRedeploy(serviceId:\$s,environmentId:\$e)}\",\"variables\":{\"s\":\"$SERVICE_ID\",\"e\":\"$ENV_ID\"}}" \
+            | tee /tmp/r.json
+          grep -q '"data"' /tmp/r.json && echo "✅ API redeploy disparado" || (echo "❌ Erro" && exit 1)
 
       - name: Redeploy Web (Railway)
         if: needs.build-web.result == 'success'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          ENV_ID: ${{ secrets.RAILWAY_ENV_ID }}
+          SERVICE_ID: ${{ secrets.RAILWAY_WEB_SERVICE_ID }}
         run: |
-          if [ -n "${{ secrets.RAILWAY_WEB_DEPLOY_HOOK }}" ]; then
-            curl -f -X POST "${{ secrets.RAILWAY_WEB_DEPLOY_HOOK }}" \
-              || echo "Railway Web deploy hook falhou (non-fatal)"
-          else
-            echo "RAILWAY_WEB_DEPLOY_HOOK não configurado — skipping"
+          if [ -z "$RAILWAY_TOKEN" ] || [ -z "$SERVICE_ID" ]; then
+            echo "Railway secrets não configurados — skipping"
+            exit 0
           fi
+          curl -f -s -X POST "https://backboard.railway.app/graphql/v2" \
+            -H "Authorization: Bearer $RAILWAY_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\":\"mutation R(\$s:String!,\$e:String!){serviceInstanceRedeploy(serviceId:\$s,environmentId:\$e)}\",\"variables\":{\"s\":\"$SERVICE_ID\",\"e\":\"$ENV_ID\"}}" \
+            | tee /tmp/r.json
+          grep -q '"data"' /tmp/r.json && echo "✅ Web redeploy disparado" || (echo "❌ Erro" && exit 1)

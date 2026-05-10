@@ -1,0 +1,52 @@
+# railway.toml — EventGear
+# Configura os serviços do projeto no Railway.
+# Os serviços api e web usam imagens pré-construídas via GHCR
+# (processo: GitHub Actions → push GHCR → Railway deploy hook).
+#
+# Setup inicial manual necessário no Railway Dashboard:
+#   1. Criar projeto "eventgear"
+#   2. Adicionar PostgreSQL plugin  → variável DATABASE_URL injetada automaticamente
+#   3. Adicionar Redis plugin        → variável REDIS_URL injetada automaticamente
+#   4. Adicionar serviço "minio"     → imagem minio/minio:latest, volume /data
+#   5. Adicionar serviço "api"       → imagem ghcr.io/christophescantelbury/eventgear/api:latest
+#   6. Adicionar serviço "web"       → imagem ghcr.io/christophescantelbury/eventgear/web:latest
+#   7. Copiar deploy hooks e adicionar como RAILWAY_API_DEPLOY_HOOK / RAILWAY_WEB_DEPLOY_HOOK no GitHub
+
+[build]
+builder = "DOCKERFILE"
+
+# ── API (NestJS) ──────────────────────────────────────────────────────────────
+# Referência: apps/api/Dockerfile
+# O CMD do Dockerfile já executa: prisma migrate deploy && node dist/main
+[services.api]
+source = { image = "ghcr.io/christophescantelbury/eventgear/api:latest" }
+
+[services.api.deploy]
+healthcheckPath = "/v1/health"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+# ── Web (Next.js PWA) ─────────────────────────────────────────────────────────
+# Referência: apps/web/Dockerfile (standalone output)
+[services.web]
+source = { image = "ghcr.io/christophescantelbury/eventgear/web:latest" }
+
+[services.web.deploy]
+healthcheckPath = "/"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+# ── MinIO (storage S3-compatível) ─────────────────────────────────────────────
+# Requer: Railway Volume montado em /data
+# Console disponível na porta 9001 (não expor publicamente)
+[services.minio]
+source = { image = "minio/minio:latest" }
+startCommand = "server /data --console-address :9001"
+
+[services.minio.deploy]
+healthcheckPath = "/minio/health/live"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3

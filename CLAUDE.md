@@ -47,15 +47,18 @@
 | Storage | **MinIO SDK** | latest |
 
 ### Infra / DevOps
-| Serviço | Plataforma |
-|---|---|
-| VPS | 31.97.162.185 (já existente) |
-| Painel de containers | **Easypanel** (já instalado) |
-| Containerização | **Docker** + **Docker Compose** |
-| CI/CD | **GitHub Actions** + Easypanel webhook |
-| Storage de arquivos | **MinIO** self-hosted (no VPS) |
-| Proxy / HTTPS | **Nginx** via Easypanel + Let's Encrypt |
-| Monitoramento | Easypanel health checks |
+| Serviço | Plataforma | Custo estimado |
+|---|---|---|
+| API (NestJS) | **Railway** — serviço Docker GHCR | ~$5-10/mês |
+| Frontend (Next.js PWA) | **Railway** — serviço Docker GHCR | ~$3-5/mês |
+| Banco de dados | **Railway** — PostgreSQL plugin | ~$5/mês |
+| Cache / Filas | **Railway** — Redis plugin | ~$3/mês |
+| Storage de arquivos | **Railway** — MinIO Docker + Volume | ~$3/mês |
+| Container Registry | **GHCR** (GitHub Container Registry) | $0 |
+| CI/CD | **GitHub Actions** + Railway deploy hooks | $0 |
+| Proxy / HTTPS | Railway domains + Let's Encrypt | $0 |
+| Monitoramento | Railway health checks + metrics | $0 |
+| **Total estimado** | | **~$19-26/mês** |
 
 ### Qualidade
 | Ferramenta | Finalidade |
@@ -338,8 +341,8 @@ Semana 4
   REL-02    Relatório de inventário
   QA-01     Testes unitários (≥70% cobertura nas regras de negócio)
   QA-02     Testes E2E Playwright nos fluxos críticos
-  DEPLOY-01 Deploy em produção no Easypanel
-  DEPLOY-02 Domínio eventgear.com.br + SSL
+  DEPLOY-01 Setup Railway (PostgreSQL + Redis + MinIO + API + Web)
+  DEPLOY-02 Domínio eventgear.com.br + SSL via Railway
 ```
 
 ---
@@ -391,7 +394,7 @@ docs(api): update swagger for checklist endpoints
 3. **Refresh token** armazenado em Redis com TTL de 30 dias
 4. **Isolamento multi-tenant** — todo query filtra por `companyId` do JWT
 5. **Rate limiting** — 100 req/min por IP via `@nestjs/throttler`
-6. **HTTPS** obrigatório em produção (Let's Encrypt via Easypanel)
+6. **HTTPS** obrigatório em produção (Let's Encrypt via Railway)
 7. **Variáveis de ambiente** nunca hardcoded, nunca commitadas
 8. **MinIO** não exposto publicamente — URLs pré-assinadas com TTL
 9. **Audit log** para: login, checklist confirmado, material deletado, evento encerrado
@@ -433,9 +436,8 @@ make secrets
 | Recurso | URL |
 |---|---|
 | Repositório | https://github.com/christopheScantelbury/eventgear |
-| Easypanel | http://31.97.162.185:3000 |
-| VPS | 31.97.162.185 |
-| MinIO Console | http://31.97.162.185:9001 (após deploy) |
+| Railway Dashboard | https://railway.app/dashboard |
+| Railway Docs | https://docs.railway.app |
 | API Docs (Swagger) | https://api.eventgear.com.br/api/docs |
 | Brevo (SMTP) | https://app.brevo.com |
 | Prisma Docs | https://www.prisma.io/docs |

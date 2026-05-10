@@ -1,14 +1,18 @@
-name: Build Images (GHCR)
+name: Build Images (GHCR) + Deploy Railway
 
-# Builda as imagens Docker no runner do GitHub (recursos ilimitados pra
-# nosso porte) e empurra para o GitHub Container Registry público. O
-# Easypanel passa a apenas puxar a imagem, sem buildar nada na VPS.
+# Builda as imagens Docker no runner do GitHub e empurra para o GHCR público.
+# O Railway puxa a imagem via deploy hook — sem build na infra de produção.
 #
 # Tags geradas:
 #   ghcr.io/<owner>/eventgear/api:latest
 #   ghcr.io/<owner>/eventgear/api:<sha>
 #   ghcr.io/<owner>/eventgear/web:latest
 #   ghcr.io/<owner>/eventgear/web:<sha>
+#
+# Secrets necessários no repositório:
+#   RAILWAY_API_DEPLOY_HOOK  — URL do webhook Railway → serviço API
+#   RAILWAY_WEB_DEPLOY_HOOK  — URL do webhook Railway → serviço Web
+#   NEXT_PUBLIC_API_URL      — URL pública da API (build-time Next.js)
 
 on:
   push:
@@ -116,36 +120,35 @@ jobs:
           labels: ${{ steps.meta-web.outputs.labels }}
           # NEXT_PUBLIC_* precisa estar disponível em build time
           build-args: |
-            NEXT_PUBLIC_API_URL=https://eventgear-api.h1dq2d.easypanel.host/v1
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+            NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL }}
           cache-from: type=gha,scope=web
           cache-to: type=gha,mode=max,scope=web
 
-  # ── Notify Easypanel para puxar a nova imagem ─────────────────────
-  redeploy-easypanel:
-    name: Trigger Easypanel pull
+  # ── Deploy Railway — notifica cada serviço para puxar a nova imagem ─
+  deploy-railway:
+    name: Trigger Railway redeploy
     runs-on: ubuntu-latest
     needs: [build-api, build-web]
     if: always() && (needs.build-api.result == 'success' || needs.build-web.result == 'success')
 
     steps:
-      - name: Trigger API redeploy
+      - name: Redeploy API (Railway)
         if: needs.build-api.result == 'success'
         run: |
-          if [ -n "${{ secrets.EASYPANEL_API_WEBHOOK }}" ]; then
-            curl -f -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}" \
-              -H "Content-Type: application/json" -d "{}" \
-              || echo "API webhook trigger failed (non-fatal)"
+          if [ -n "${{ secrets.RAILWAY_API_DEPLOY_HOOK }}" ]; then
+            curl -f -X POST "${{ secrets.RAILWAY_API_DEPLOY_HOOK }}" \
+              || echo "Railway API deploy hook falhou (non-fatal)"
           else
-            echo "EASYPANEL_API_WEBHOOK not set — skipping"
+            echo "RAILWAY_API_DEPLOY_HOOK não configurado — skipping"
           fi
 
-      - name: Trigger Web redeploy
+      - name: Redeploy Web (Railway)
         if: needs.build-web.result == 'success'
         run: |
-          if [ -n "${{ secrets.EASYPANEL_WEB_WEBHOOK }}" ]; then
-            curl -f -X POST "${{ secrets.EASYPANEL_WEB_WEBHOOK }}" \
-              -H "Content-Type: application/json" -d "{}" \
-              || echo "Web webhook trigger failed (non-fatal)"
+          if [ -n "${{ secrets.RAILWAY_WEB_DEPLOY_HOOK }}" ]; then
+            curl -f -X POST "${{ secrets.RAILWAY_WEB_DEPLOY_HOOK }}" \
+              || echo "Railway Web deploy hook falhou (non-fatal)"
           else
-            echo "EASYPANEL_WEB_WEBHOOK not set — skipping"
+            echo "RAILWAY_WEB_DEPLOY_HOOK não configurado — skipping"
           fi

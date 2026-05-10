@@ -34,7 +34,9 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-RUN apk add --no-cache dumb-init
+# dumb-init: graceful shutdown
+# openssl: Prisma engine precisa de libssl no runtime (linux-musl-openssl-3.0.x)
+RUN apk add --no-cache dumb-init openssl
 
 # apenas o runtime mínimo necessário
 COPY --from=builder /app/apps/api/dist               ./dist

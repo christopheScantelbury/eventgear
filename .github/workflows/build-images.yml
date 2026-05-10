@@ -119,9 +119,10 @@ jobs:
           tags: ${{ steps.meta-web.outputs.tags }}
           labels: ${{ steps.meta-web.outputs.labels }}
           # NEXT_PUBLIC_* precisa estar disponível em build time
+          # URLs do Railway são públicas (não são secrets)
           build-args: |
-            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
-            NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL }}
+            NEXT_PUBLIC_API_URL=https://api-production-6757.up.railway.app/v1
+            NEXT_PUBLIC_APP_URL=https://web-production-d5d96.up.railway.app
           cache-from: type=gha,scope=web
           cache-to: type=gha,mode=max,scope=web
 

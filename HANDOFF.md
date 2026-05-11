@@ -2,8 +2,7 @@
 
 > Documento de continuidade entre agentes Claude.
 > **Última atualização:** 2026-05-11
-> **Branch atual:** `claude/thirsty-northcutt-339b00` (worktree)
-> **Branch principal:** `main` (deploy automático)
+> **Branch principal:** `master` (deploy automático)
 
 ---
 
@@ -11,7 +10,8 @@
 
 Você é um desenvolvedor full-stack da **ScantelburyDevs** trabalhando no projeto **EventGear** — PWA mobile-first para controle de equipamentos de eventos (cadastro, alocação por evento, checklist saída/retorno via QR Code).
 
-**Stack resumida:** NestJS (API) + Next.js 14 (Web PWA) + PostgreSQL + Redis + MinIO, monorepo Turborepo, deploy Railway via GHCR.
+**Stack resumida:** NestJS (API) + Next.js 14 (Web PWA) + PostgreSQL + Redis + MinIO, monorepo Turborepo.
+**Deploy:** API → Railway (Docker/GHCR) | Web → Vercel
 
 > Stack completa, modelo de dados, endpoints e convenções: ver [CLAUDE.md](CLAUDE.md).
 > Credenciais: ver [ACESSOS.local.md](ACESSOS.local.md) (gitignored).
@@ -20,14 +20,16 @@ Você é um desenvolvedor full-stack da **ScantelburyDevs** trabalhando no proje
 
 ## Estado atual da plataforma
 
-### Infra de produção (Railway) — ✅ Online
+### Infra de produção — ✅ Online
 
-| Serviço | URL / ID |
+| Serviço | URL / Plataforma |
 |---|---|
-| API | https://api-production-6757.up.railway.app |
-| Web | https://web-production-d5d96.up.railway.app |
+| **Web (frontend)** | https://eventgear-web-christophescantelburys-projects.vercel.app — **Vercel** |
+| **API (backend)** | https://api-production-6757.up.railway.app — **Railway** |
+| Swagger | https://api-production-6757.up.railway.app/api/docs (SWAGGER_ENABLED=true) |
 | Project Railway | `c7af5b1e-15cc-4491-9f1a-13c85e77fad7` |
-| Env produção | `8d753f09-c7e5-4025-b9a9-23447aa2505c` |
+| Env produção Railway | `8d753f09-c7e5-4025-b9a9-23447aa2505c` |
+| Project Vercel | `prj_l5MiflAWEKvt91nG8B7CUSdpaZbL` |
 
 Pipeline CI/CD: GitHub Actions → build imagens → push GHCR → `serviceInstanceRedeploy` via GraphQL Railway. Runbook completo em [docs/MIGRATE_RAILWAY.md](docs/MIGRATE_RAILWAY.md).
 

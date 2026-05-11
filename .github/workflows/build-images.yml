@@ -1,18 +1,19 @@
-name: Build Images (GHCR) + Deploy Railway
+name: Build API (GHCR + Railway) + Deploy Web (Vercel)
 
-# Builda as imagens Docker no runner do GitHub e empurra para o GHCR público.
-# O Railway puxa a imagem via deploy hook — sem build na infra de produção.
+# API: build Docker → push GHCR → Railway redeploy
+# Web: Vercel gerencia o build e deploy automaticamente via GitHub integration.
+#      O job deploy-vercel abaixo serve apenas de fallback/trigger manual.
 #
-# Tags geradas:
+# Tags geradas para API:
 #   ghcr.io/<owner>/eventgear/api:latest
 #   ghcr.io/<owner>/eventgear/api:<sha>
-#   ghcr.io/<owner>/eventgear/web:latest
-#   ghcr.io/<owner>/eventgear/web:<sha>
 #
 # Secrets necessários no repositório:
-#   RAILWAY_API_DEPLOY_HOOK  — URL do webhook Railway → serviço API
-#   RAILWAY_WEB_DEPLOY_HOOK  — URL do webhook Railway → serviço Web
-#   NEXT_PUBLIC_API_URL      — URL pública da API (build-time Next.js)
+#   RAILWAY_TOKEN            — account token Railway
+#   RAILWAY_ENV_ID           — id do environment de produção
+#   RAILWAY_API_SERVICE_ID   — id do serviço api
+#   VERCEL_TOKEN             — token da conta Vercel
+#   VERCEL_PROJECT_ID        — id do projeto eventgear-web no Vercel
 
 on:
   push:
@@ -28,13 +29,17 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  OWNER_LC: ${{ github.repository_owner }}
 
 jobs:
-  # ── API ────────────────────────────────────────────────────────────
+  # ── API — Docker → GHCR → Railway ──────────────────────────────────
   build-api:
     name: Build API image
     runs-on: ubuntu-latest
+    # Roda apenas quando arquivos da API ou packages mudam
+    if: |
+      contains(toJson(github.event.commits.*.modified + github.event.commits.*.added), 'apps/api') ||
+      contains(toJson(github.event.commits.*.modified + github.event.commits.*.added), 'packages') ||
+      github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
       packages: write
@@ -73,71 +78,18 @@ jobs:
           push: true
           tags: ${{ steps.meta-api.outputs.tags }}
           labels: ${{ steps.meta-api.outputs.labels }}
-          cache-from: type=gha,scope=api
-          cache-to: type=gha,mode=max,scope=api
+          cache-from: type=registry,ref=ghcr.io/${{ steps.owner.outputs.lc }}/eventgear/api:buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ steps.owner.outputs.lc }}/eventgear/api:buildcache,mode=max
 
-  # ── Web ────────────────────────────────────────────────────────────
-  build-web:
-    name: Build Web image
+  # ── Deploy Railway API ──────────────────────────────────────────────
+  deploy-railway-api:
+    name: Trigger Railway API redeploy
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Lowercase owner
-        id: owner
-        run: echo "lc=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
-
-      - name: Login GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Metadata
-        id: meta-web
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ steps.owner.outputs.lc }}/eventgear/web
-          tags: |
-            type=raw,value=latest
-            type=sha,format=short
-
-      - name: Build & push (Web)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: apps/web/Dockerfile
-          push: true
-          tags: ${{ steps.meta-web.outputs.tags }}
-          labels: ${{ steps.meta-web.outputs.labels }}
-          # NEXT_PUBLIC_* precisa estar disponível em build time
-          # URLs do Railway são públicas (não são secrets)
-          build-args: |
-            NEXT_PUBLIC_API_URL=https://api-production-6757.up.railway.app/v1
-            NEXT_PUBLIC_APP_URL=https://web-production-d5d96.up.railway.app
-          cache-from: type=gha,scope=web
-          cache-to: type=gha,mode=max,scope=web
-
-  # ── Deploy Railway — força pull da nova imagem via GraphQL ─────────
-  # Usa serviceInstanceRedeploy direto (Railway não expõe deployHookCreate
-  # na API GraphQL pública, então fazemos a mutation manualmente).
-  deploy-railway:
-    name: Trigger Railway redeploy
-    runs-on: ubuntu-latest
-    needs: [build-api, build-web]
-    if: always() && (needs.build-api.result == 'success' || needs.build-web.result == 'success')
+    needs: build-api
+    if: needs.build-api.result == 'success'
 
     steps:
       - name: Redeploy API (Railway)
-        if: needs.build-api.result == 'success'
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           ENV_ID: ${{ secrets.RAILWAY_ENV_ID }}
@@ -154,20 +106,39 @@ jobs:
             | tee /tmp/r.json
           grep -q '"data"' /tmp/r.json && echo "✅ API redeploy disparado" || (echo "❌ Erro" && exit 1)
 
-      - name: Redeploy Web (Railway)
-        if: needs.build-web.result == 'success'
+  # ── Web — Vercel (trigger manual/fallback) ──────────────────────────
+  # A Vercel já escuta push no master via GitHub integration e faz deploy
+  # automático. Este job serve como trigger explícito via API para garantir
+  # que o deploy aconteça mesmo se a integração automática falhar.
+  deploy-vercel:
+    name: Trigger Vercel deploy (web)
+    runs-on: ubuntu-latest
+    if: |
+      contains(toJson(github.event.commits.*.modified + github.event.commits.*.added), 'apps/web') ||
+      contains(toJson(github.event.commits.*.modified + github.event.commits.*.added), 'packages') ||
+      github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Deploy to Vercel
         env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          ENV_ID: ${{ secrets.RAILWAY_ENV_ID }}
-          SERVICE_ID: ${{ secrets.RAILWAY_WEB_SERVICE_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          if [ -z "$RAILWAY_TOKEN" ] || [ -z "$SERVICE_ID" ]; then
-            echo "Railway secrets não configurados — skipping"
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$PROJECT_ID" ]; then
+            echo "Vercel secrets não configurados — skipping (integração automática cuida do deploy)"
             exit 0
           fi
-          curl -f -s -X POST "https://backboard.railway.app/graphql/v2" \
-            -H "Authorization: Bearer $RAILWAY_TOKEN" \
+          curl -f -s -X POST "https://api.vercel.com/v13/deployments" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\":\"mutation R(\$s:String!,\$e:String!){serviceInstanceRedeploy(serviceId:\$s,environmentId:\$e)}\",\"variables\":{\"s\":\"$SERVICE_ID\",\"e\":\"$ENV_ID\"}}" \
-            | tee /tmp/r.json
-          grep -q '"data"' /tmp/r.json && echo "✅ Web redeploy disparado" || (echo "❌ Erro" && exit 1)
+            -d "{
+              \"name\": \"eventgear-web\",
+              \"project\": \"$PROJECT_ID\",
+              \"gitSource\": {
+                \"type\": \"github\",
+                \"repoId\": 1232302708,
+                \"ref\": \"${{ github.ref_name }}\"
+              },
+              \"target\": \"production\"
+            }" | grep -oE '"(id|url|readyState)":\s*"[^"]*"' | head -5
+          echo "✅ Vercel deploy disparado"

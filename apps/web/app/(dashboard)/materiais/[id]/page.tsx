@@ -2,10 +2,11 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ChevronLeft, Trash2, QrCode, Tag, Pencil } from 'lucide-react';
+import { ChevronLeft, Trash2, QrCode, Tag, Pencil, ImagePlus, Star, X } from 'lucide-react';
 import Link from 'next/link';
 import QRCode from 'qrcode';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
+import Image from 'next/image';
 import { materialsApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -175,6 +176,14 @@ export default function MaterialDetailPage() {
         </div>
       </div>
 
+      {/* Fotos */}
+      <PhotosSection
+        materialId={id}
+        photos={material.photos ?? []}
+        isAdmin={isAdmin}
+        onUpload={() => qc.invalidateQueries({ queryKey: ['materials', id] })}
+      />
+
       {isAdmin && (
         <div className="bg-status-lost/8 border border-status-lost/25 rounded-xl p-4 flex items-center justify-between gap-3">
           <div>
@@ -194,6 +203,115 @@ export default function MaterialDetailPage() {
             <Trash2 size={14} />
             Remover
           </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Seção de fotos ─────────────────────────────────────────────────────────
+interface Photo { id: string; storageUrl: string; isPrimary: boolean }
+
+function PhotosSection({
+  materialId,
+  photos,
+  isAdmin,
+  onUpload,
+}: {
+  materialId: string;
+  photos: Photo[];
+  isAdmin: boolean;
+  onUpload: () => void;
+}) {
+  const { toast } = useToast();
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const { mutate: upload, isPending: uploading } = useMutation({
+    mutationFn: ({ file, isPrimary }: { file: File; isPrimary: boolean }) =>
+      materialsApi.addPhoto(materialId, file, isPrimary),
+    onSuccess: () => {
+      toast('Foto adicionada!', 'success');
+      onUpload();
+    },
+    onError: (e) => toast(getErrorMessage(e), 'error'),
+  });
+
+  const handleFile = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const isPrimary = photos.length === 0; // primeira foto vira principal
+      upload({ file, isPrimary });
+      e.target.value = '';
+    },
+    [photos.length, upload],
+  );
+
+  return (
+    <div className="bg-dark-800 border border-dark-border rounded-xl p-5 mb-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-mono text-[10px] uppercase tracking-[1.5px] text-text-muted flex items-center gap-2">
+          <ImagePlus size={12} /> Fotos
+        </h3>
+        {isAdmin && (
+          <>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFile}
+            />
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+            >
+              {uploading ? <Spinner className="w-3 h-3" /> : <ImagePlus size={13} />}
+              {uploading ? 'Enviando…' : 'Adicionar foto'}
+            </Button>
+          </>
+        )}
+      </div>
+
+      {photos.length === 0 ? (
+        <div
+          className="border-2 border-dashed border-dark-border rounded-lg p-8 text-center cursor-pointer hover:border-amber-500/40 transition-colors"
+          onClick={() => isAdmin && fileRef.current?.click()}
+        >
+          <ImagePlus size={28} className="mx-auto mb-2 text-text-muted" />
+          <p className="text-sm text-text-muted">
+            {isAdmin ? 'Clique para adicionar a primeira foto' : 'Sem fotos cadastradas'}
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+          {photos.map((photo) => (
+            <div key={photo.id} className="relative group aspect-square">
+              <Image
+                src={photo.storageUrl}
+                alt="Foto do material"
+                fill
+                className="object-cover rounded-lg"
+                sizes="(max-width: 640px) 33vw, 25vw"
+              />
+              {photo.isPrimary && (
+                <span className="absolute top-1 left-1 bg-amber-500 rounded-full p-0.5">
+                  <Star size={9} className="text-dark-900" fill="currentColor" />
+                </span>
+              )}
+            </div>
+          ))}
+          {isAdmin && (
+            <button
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className="aspect-square rounded-lg border-2 border-dashed border-dark-border flex items-center justify-center text-text-muted hover:border-amber-500/40 hover:text-amber-400 transition-colors"
+            >
+              {uploading ? <Spinner className="w-4 h-4" /> : <ImagePlus size={18} />}
+            </button>
+          )}
         </div>
       )}
     </div>

@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon } from 'lucide-react';
 import { calendarApi, type CalendarEvent } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -24,9 +24,12 @@ export default function CalendarioPage() {
 
   const { rangeStart, rangeEnd, days } = useMemo(() => buildRange(cursor, view), [cursor, view]);
 
-  const { data: events, isLoading } = useQuery({
+  const { data: events, isLoading, isFetching } = useQuery({
     queryKey: ['calendar-events', rangeStart.toISOString(), rangeEnd.toISOString()],
     queryFn: () => calendarApi.events({ start: rangeStart.toISOString(), end: rangeEnd.toISOString() }),
+    // Mantém os dados anteriores visíveis enquanto carrega novo range/view.
+    // Evita o flash de skeleton ao trocar entre Mês ↔ Semana.
+    placeholderData: keepPreviousData,
   });
 
   const eventsByDay = useMemo(() => groupEventsByDay(events ?? [], days), [events, days]);
@@ -112,10 +115,10 @@ export default function CalendarioPage() {
       </div>
 
       {/* Grid */}
-      {isLoading ? (
+      {isLoading && !events ? (
         <Skeleton className="h-96 w-full" />
       ) : (
-        <div className={cn('grid grid-cols-7 gap-1', view === 'week' ? 'auto-rows-[180px]' : 'auto-rows-[120px]')}>
+        <div className={cn('grid grid-cols-7 gap-1 transition-opacity', view === 'week' ? 'auto-rows-[180px]' : 'auto-rows-[120px]', isFetching && 'opacity-60')}>
           {days.map((day, i) => {
             const isOtherMonth = view === 'month' && day.getMonth() !== cursor.getMonth();
             const isToday = isSameDay(day, new Date());

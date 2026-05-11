@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { Check, Crown, Zap, Building2, ExternalLink, AlertCircle } from 'lucide-react';
+import { Check, Crown, Zap, Building2, ExternalLink, AlertCircle, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { billingApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -63,6 +63,19 @@ export default function PlanosPage() {
         </p>
       </div>
 
+      {/* Banner de urgência — trial expirado sem plano */}
+      {status && !status.plan && !trialActive && (
+        <div className="flex items-start gap-3 bg-status-lost/10 border border-status-lost/30 rounded-xl p-4 mb-4">
+          <AlertTriangle size={16} className="text-status-lost shrink-0 mt-0.5" />
+          <div className="text-sm">
+            <p className="font-semibold text-status-lost">Seu acesso está limitado</p>
+            <p className="text-text-secondary mt-0.5">
+              O período de trial encerrou. Algumas funcionalidades foram bloqueadas. Assine um plano abaixo para restaurar o acesso completo.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Status atual */}
       {status && (
         <div className="bg-dark-800 border border-dark-border rounded-xl p-5 mb-6">
@@ -88,8 +101,8 @@ export default function PlanosPage() {
                 </>
               ) : (
                 <>
-                  <p className="font-display text-xl font-extrabold text-status-lost">Sem plano</p>
-                  <p className="text-xs text-text-muted mt-0.5">Período de teste expirado — escolha um plano abaixo</p>
+                  <p className="font-display text-xl font-extrabold text-status-lost">Trial encerrado</p>
+                  <p className="text-xs text-text-muted mt-0.5">Assine um plano para continuar usando o EventGear</p>
                 </>
               )}
             </div>

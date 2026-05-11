@@ -238,10 +238,16 @@ export const eventsApi = {
 
 // --- Checklist ---
 export const checklistApi = {
+  // Rota correta: /checklist/generate (não /checklist sem sufixo)
   generate: (eventId: string, type: 'DEPARTURE' | 'RETURN') =>
-    api.post(`/events/${eventId}/checklist`, { type }).then((r) => r.data),
+    api.post(`/events/${eventId}/checklist/generate`, { type }).then((r) => r.data),
+  // API retorna { items: [...], summary: {...} } — extraímos o array e filtramos por tipo
   getItems: (eventId: string, type?: string) =>
-    api.get(`/events/${eventId}/checklist`, { params: { type } }).then((r) => r.data),
+    api.get(`/events/${eventId}/checklist`).then((r) => {
+      const data = r.data;
+      const allItems: any[] = Array.isArray(data) ? data : (data?.items ?? []);
+      return type ? allItems.filter((i: any) => i.type === type) : allItems;
+    }),
   scan: (data: { qrCode: string; eventId: string; type: 'DEPARTURE' | 'RETURN' }) =>
     api.post('/checklist/scan', data).then((r) => r.data),
 };

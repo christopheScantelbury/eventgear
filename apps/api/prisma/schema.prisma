@@ -78,7 +78,8 @@ model Material {
 
   @@index([companyId])
   @@index([companyId, status])
-  @@index([qrCode])
+  @@index([companyId, qrCode]) // composite: scan QR já filtra por empresa
+  @@index([qrCode])            // mantido para lookups diretos
 }
 
 enum MaterialStatus {

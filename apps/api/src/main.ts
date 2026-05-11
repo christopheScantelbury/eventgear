@@ -27,16 +27,23 @@ async function bootstrap() {
     }),
   );
 
-  // CORS
+  // CORS — aceita múltiplas origens (Railway + Vercel + local)
+  const allowedOrigins = (process.env.APP_URL ?? 'http://localhost:3000')
+    .split(',')
+    .map((o) => o.trim());
   app.enableCors({
-    origin: process.env.APP_URL ?? 'http://localhost:3000',
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.some((o) => origin === o || origin.endsWith('.vercel.app'))) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS: origem não permitida — ${origin}`), false);
+      }
+    },
     credentials: true,
   });
 
-  // Swagger — habilitado fora de produção, ou em prod via SWAGGER_ENABLED=true
-  const swaggerEnabled =
-    process.env.NODE_ENV !== 'production' || process.env.SWAGGER_ENABLED === 'true';
-  if (swaggerEnabled) {
+  // Swagger — habilitado apenas via SWAGGER_ENABLED=true (nunca por default em produção)
+  if (process.env.SWAGGER_ENABLED === 'true') {
     const config = new DocumentBuilder()
       .setTitle('EventGear API')
       .setDescription('Sistema de Controle de Eventos e Materiais — ScantelburyDevs')

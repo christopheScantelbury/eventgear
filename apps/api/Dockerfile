@@ -9,11 +9,10 @@ COPY package*.json ./
 COPY apps/api/package*.json ./apps/api/
 COPY packages/ ./packages/
 
-# Reduz pressão de memória/CPU na VPS pequena:
-# --maxsockets=2 limita downloads paralelos; --no-audit/--no-fund evita HTTP extra;
-# NODE_OPTIONS limita heap do Node durante o install.
-ENV NODE_OPTIONS="--max-old-space-size=1024"
-RUN npm ci --ignore-scripts --maxsockets=2 --no-audit --no-fund --prefer-offline
+# 2GB de heap — suficiente para monorepo com Prisma generation sem OOM.
+# --maxsockets=3 melhora velocidade de download sem sobrecarregar a rede.
+ENV NODE_OPTIONS="--max-old-space-size=2048"
+RUN npm ci --ignore-scripts --maxsockets=3 --no-audit --no-fund --prefer-offline
 # rebuild nativos (bcrypt, sharp) para o ambiente Alpine
 RUN npm rebuild bcrypt --prefix apps/api || true
 RUN npm rebuild sharp --prefix apps/api || true

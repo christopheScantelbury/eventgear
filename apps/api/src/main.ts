@@ -33,8 +33,10 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // Swagger
-  if (process.env.NODE_ENV !== 'production') {
+  // Swagger — habilitado fora de produção, ou em prod via SWAGGER_ENABLED=true
+  const swaggerEnabled =
+    process.env.NODE_ENV !== 'production' || process.env.SWAGGER_ENABLED === 'true';
+  if (swaggerEnabled) {
     const config = new DocumentBuilder()
       .setTitle('EventGear API')
       .setDescription('Sistema de Controle de Eventos e Materiais — ScantelburyDevs')

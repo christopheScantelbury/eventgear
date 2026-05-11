@@ -100,8 +100,17 @@ export default function ChecklistPage() {
     mutationFn: (qrCode: string) => checklistApi.scan({ qrCode, eventId: id, type: apiType }),
     onSuccess: (result) => {
       qc.invalidateQueries({ queryKey: ['checklist', id, tipo] });
-      toast(`${result.material?.name ?? 'Item'} confirmado`, 'success');
+      toast(`${result.eventMaterial?.material?.name ?? 'Item'} confirmado`, 'success');
       setScanMode(false);
+    },
+    onError: (e) => toast(getErrorMessage(e), 'error'),
+  });
+
+  const { mutate: confirmItem, isPending: confirming } = useMutation({
+    mutationFn: ({ itemId, status }: { itemId: string; status: string }) =>
+      checklistApi.updateItem(id, itemId, { status }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['checklist', id, tipo] });
     },
     onError: (e) => toast(getErrorMessage(e), 'error'),
   });
@@ -208,14 +217,27 @@ export default function ChecklistPage() {
 
           <div className="space-y-2">
             {allItems.map((item: any) => {
+              const isPending = item.status === 'PENDING';
               const cfg = ITEM_ICON_MAP[item.status] ?? ITEM_ICON_MAP.PENDING;
               const Icon = cfg.icon;
               return (
-                <div
+                <button
                   key={item.id}
+                  onClick={() =>
+                    confirmItem({
+                      itemId: item.id,
+                      status: isPending ? 'CONFIRMED' : 'PENDING',
+                    })
+                  }
+                  disabled={confirming || item.status === 'MISSING' || item.status === 'DAMAGED'}
                   className={cn(
-                    'min-h-12 flex items-center gap-3 bg-dark-800 border border-dark-border rounded-lg px-4 py-3',
+                    'w-full min-h-12 flex items-center gap-3 bg-dark-800 border rounded-lg px-4 py-3 text-left',
                     'transition-colors',
+                    isPending
+                      ? 'border-dark-border hover:border-amber-500/50 cursor-pointer'
+                      : item.status === 'CONFIRMED'
+                      ? 'border-status-available/30 cursor-pointer hover:border-status-available/50'
+                      : 'border-dark-border cursor-default opacity-70',
                   )}
                 >
                   <div
@@ -235,7 +257,7 @@ export default function ChecklistPage() {
                     </p>
                   </div>
                   <ChecklistItemBadge status={item.status} />
-                </div>
+                </button>
               );
             })}
           </div>

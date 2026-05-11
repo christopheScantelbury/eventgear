@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ChevronLeft, UserPlus, Trash2, Pencil, Check, X, RefreshCw } from 'lucide-react';
+import { ChevronLeft, UserPlus, Trash2, Pencil, Check, X, RefreshCw, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth.store';
@@ -34,6 +34,7 @@ export default function UsuariosPage() {
   // Modal criar
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -72,14 +73,15 @@ export default function UsuariosPage() {
   // ── Criar usuário ──────────────────────────────────────────────
   async function handleCreate() {
     if (!newName.trim() || !newEmail.trim() || !newPassword) {
-      toast('Preencha todos os campos', 'error');
+      setCreateError('Preencha todos os campos');
       return;
     }
     if (newPassword.length < 8) {
-      toast('Senha deve ter ao menos 8 caracteres', 'error');
+      setCreateError('Senha deve ter ao menos 8 caracteres');
       return;
     }
     setCreating(true);
+    setCreateError(null);
     try {
       await usersApi.create({ name: newName.trim(), email: newEmail.trim(), password: newPassword, role: newRole });
       toast('Usuário criado com sucesso', 'success');
@@ -87,15 +89,16 @@ export default function UsuariosPage() {
       resetCreateForm();
       load();
     } catch (e: unknown) {
-      const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      toast(typeof msg === 'string' ? msg : 'Erro ao criar usuário', 'error');
+      const raw = (e as { response?: { data?: { message?: string | string[] } } })?.response?.data?.message;
+      const msg = Array.isArray(raw) ? raw[0] : (typeof raw === 'string' ? raw : 'Erro ao criar usuário');
+      setCreateError(msg);
     } finally {
       setCreating(false);
     }
   }
 
   function resetCreateForm() {
-    setNewName(''); setNewEmail(''); setNewPassword(''); setNewRole('OPERATOR');
+    setNewName(''); setNewEmail(''); setNewPassword(''); setNewRole('OPERATOR'); setCreateError(null);
   }
 
   // ── Editar role inline ─────────────────────────────────────────
@@ -280,6 +283,12 @@ export default function UsuariosPage() {
       {/* Modal: criar usuário */}
       <Dialog open={createOpen} onClose={() => { setCreateOpen(false); resetCreateForm(); }} title="Novo usuário">
         <div className="space-y-4">
+          {createError && (
+            <div className="flex items-start gap-2 bg-status-lost/10 border border-status-lost/30 rounded-lg px-3 py-2.5 text-sm">
+              <AlertCircle size={15} className="text-status-lost shrink-0 mt-0.5" />
+              <p className="text-status-lost">{createError}</p>
+            </div>
+          )}
           <div>
             <Label htmlFor="new-name">Nome completo</Label>
             <Input

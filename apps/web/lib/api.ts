@@ -206,7 +206,7 @@ export const calendarApi = {
 
 // --- Materials ---
 export const materialsApi = {
-  list: (params?: { page?: number; limit?: number; search?: string; status?: string }) =>
+  list: (params?: { page?: number; limit?: number; search?: string; status?: string; category?: string }) =>
     api.get('/materials', { params }).then((r) => r.data),
   get: (id: string) => api.get(`/materials/${id}`).then((r) => r.data),
   create: (data: object) => api.post('/materials', data).then((r) => r.data),
@@ -250,6 +250,8 @@ export const checklistApi = {
     }),
   scan: (data: { qrCode: string; eventId: string; type: 'DEPARTURE' | 'RETURN' }) =>
     api.post('/checklist/scan', data).then((r) => r.data),
+  updateItem: (eventId: string, itemId: string, data: { status?: string; notes?: string }) =>
+    api.patch(`/events/${eventId}/checklist/${itemId}`, data).then((r) => r.data),
 };
 
 // --- Reports ---

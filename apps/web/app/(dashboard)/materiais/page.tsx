@@ -2,23 +2,33 @@
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, Search, Package, QrCode } from 'lucide-react';
+import { Plus, Search, Package, QrCode, Filter } from 'lucide-react';
 import Link from 'next/link';
 import { materialsApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
 import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { MaterialStatusBadge } from '@/components/ui/status-badge';
 
+// Categorias padrão (usadas na criação de materiais)
+const CATEGORIES = ['Áudio', 'Vídeo', 'Iluminação', 'Cabos', 'Estrutura', 'Outros'];
+
 export default function MateriaisPage() {
   const isAdmin = useAuthStore((s) => s.isAdmin());
   const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('');
   const [page, setPage] = useState(1);
 
   const { data, isLoading } = useQuery({
-    queryKey: ['materials', page, search],
-    queryFn: () => materialsApi.list({ page, limit: 20, search: search || undefined }),
+    queryKey: ['materials', page, search, category],
+    queryFn: () => materialsApi.list({
+      page,
+      limit: 20,
+      search: search || undefined,
+      category: category || undefined,
+    }),
   });
 
   const materials = data?.items ?? [];
@@ -45,20 +55,41 @@ export default function MateriaisPage() {
         )}
       </div>
 
-      <div className="relative mb-4">
-        <Search
-          size={16}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
-        />
-        <Input
-          placeholder="Buscar materiais..."
-          className="pl-9"
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1);
-          }}
-        />
+      <div className="flex gap-2 mb-4">
+        <div className="relative flex-1">
+          <Search
+            size={16}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
+          />
+          <Input
+            placeholder="Buscar materiais..."
+            className="pl-9"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+          />
+        </div>
+        <div className="relative">
+          <Filter
+            size={14}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none z-10"
+          />
+          <Select
+            value={category}
+            onChange={(e) => {
+              setCategory(e.target.value);
+              setPage(1);
+            }}
+            className="pl-8 pr-8 min-w-[140px]"
+          >
+            <option value="">Todas categorias</option>
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </Select>
+        </div>
       </div>
 
       {isLoading ? (

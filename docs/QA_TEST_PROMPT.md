@@ -127,23 +127,18 @@ Se qualquer pré-checagem falhar, **parar e reportar** antes de continuar.
 - [ ] **7.7** Confirmar item manualmente (sem scanner) clicando no checkbox
 - [ ] **7.8** Finalizar checklist → status do evento atualiza
 
-### 8. Planos & Stripe LIVE
+### 8. Planos (UI apenas — sem Stripe)
 
-> ⚠️ **NÃO concluir nenhum pagamento** — são prices LIVE de verdade.
-> Apenas validar que o fluxo abre o Checkout corretamente e voltar.
+> ℹ️ Testar apenas a UI da página de planos. Não clicar em nenhum botão
+> que redirecione para o Stripe Checkout — o redirecionamento externo
+> trava o agente de QA.
 
 - [ ] **8.1** `/planos` exibe 3 cards: Básico (R$ 79), Pro (R$ 149 — "MAIS POPULAR"), Business (R$ 249)
 - [ ] **8.2** Status atual mostra `Trial Gratuito` (se não tiver plano ativo)
 - [ ] **8.3** Barras de uso (Materiais / Eventos / Usuários) refletem o uso real dos testes acima
-- [ ] **8.4** Clicar "Assinar com 30 dias grátis" no Pro → redireciona para `checkout.stripe.com`
-- [ ] **8.5** Na página do Stripe Checkout verificar:
-      - Nome: "EventGear" no cabeçalho
-      - Produto: "EventGear Pro"
-      - Valor: R$ 149,00/mês
-      - Trial: "Hoje você paga R$ 0,00 (30 dias grátis)"
-      - Domínio: `checkout.stripe.com`
-- [ ] **8.6** **Voltar sem finalizar** → URL retorna para `/planos`
-- [ ] **8.7** Se já tiver plano ativo: botão "Gerenciar pagamento" abre Customer Portal Stripe
+- [ ] **8.4** Botão "Assinar com 30 dias grátis" existe e está visível no card Pro
+- [ ] **8.5** Botão "Gerenciar pagamento" existe no card do plano atual (se assinado)
+- [ ] **8.6** ⛔ **NÃO clicar** em nenhum botão que redirecione para checkout.stripe.com
 
 ### 9. PWA + Offline
 

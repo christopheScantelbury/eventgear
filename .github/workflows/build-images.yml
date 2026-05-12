@@ -35,11 +35,9 @@ jobs:
   build-api:
     name: Build API image
     runs-on: ubuntu-latest
-    # Roda apenas quando arquivos da API ou packages mudam
-    if: |
-      contains(toJson(github.event.commits.*.modified + github.event.commits.*.added), 'apps/api') ||
-      contains(toJson(github.event.commits.*.modified + github.event.commits.*.added), 'packages') ||
-      github.event_name == 'workflow_dispatch'
+    # Roda sempre que o workflow é disparado (o filtro de paths no trigger já
+    # garante que só chegamos aqui quando apps/api, apps/web ou packages mudaram)
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
       packages: write
@@ -106,17 +104,13 @@ jobs:
             | tee /tmp/r.json
           grep -q '"data"' /tmp/r.json && echo "✅ API redeploy disparado" || (echo "❌ Erro" && exit 1)
 
-  # ── Web — Vercel (trigger manual/fallback) ──────────────────────────
-  # A Vercel já escuta push no master via GitHub integration e faz deploy
-  # automático. Este job serve como trigger explícito via API para garantir
-  # que o deploy aconteça mesmo se a integração automática falhar.
+  # ── Web — Vercel (produção garantida via API) ───────────────────────
+  # A integração GitHub do Vercel cria apenas preview deployments.
+  # Este job garante um deployment com target=production em toda push ao master.
   deploy-vercel:
     name: Trigger Vercel deploy (web)
     runs-on: ubuntu-latest
-    if: |
-      contains(toJson(github.event.commits.*.modified + github.event.commits.*.added), 'apps/web') ||
-      contains(toJson(github.event.commits.*.modified + github.event.commits.*.added), 'packages') ||
-      github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
 
     steps:
       - name: Deploy to Vercel

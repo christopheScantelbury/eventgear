@@ -138,8 +138,6 @@ export function Sidebar() {
           Sair
         </button>
         <p className="font-mono text-[9px] tracking-[1px] text-text-muted mt-3 leading-tight">
-          SCANTELBURYDEVS
-          <br />
           v1.0 · 2026
         </p>
       </div>

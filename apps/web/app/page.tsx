@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { BrandLockup } from '@/components/brand/logo';
-import { EcossistemaScantelbury } from '@/components/landing/ecossistema-scantelbury';
 import {
   Package,
   CalendarDays,
@@ -479,8 +478,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <EcossistemaScantelbury />
-
       {/* ── CTA Final ──────────────────────────────────────────── */}
       <section className="py-20 sm:py-28 px-4 sm:px-6 bg-gray-900">
         <div className="mx-auto max-w-2xl text-center">
@@ -517,9 +514,6 @@ export default function LandingPage() {
               <p className="mt-3 text-xs text-gray-500 leading-relaxed">
                 Gestão de equipamentos para eventos com checklist por QR Code.
               </p>
-              <p className="mt-3 text-xs font-mono text-gray-600">
-                Build · Migrate · Innovate
-              </p>
             </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">PRODUTO</p>
@@ -528,13 +522,6 @@ export default function LandingPage() {
                 <li><a href="#precos" className="hover:text-gray-300 transition-colors">Preços</a></li>
                 <li><Link href="/register" className="hover:text-gray-300 transition-colors">Criar conta</Link></li>
                 <li><Link href="/login" className="hover:text-gray-300 transition-colors">Entrar</Link></li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">ECOSSISTEMA</p>
-              <ul className="space-y-2.5 text-sm text-gray-500">
-                <li><a href="https://emitirnotafacil.com.br" target="_blank" rel="noopener noreferrer" className="hover:text-gray-300 transition-colors">Nota Fácil ↗</a></li>
-                <li><a href="https://agendainteligentefrontend.agendainteligenteapp.cloud" target="_blank" rel="noopener noreferrer" className="hover:text-gray-300 transition-colors">Agenda Inteligente ↗</a></li>
               </ul>
             </div>
             <div>
@@ -547,7 +534,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="border-t border-gray-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-xs text-gray-600">© 2026 ScantelburyDevs · Todos os direitos reservados</p>
+            <p className="text-xs text-gray-600">© 2026 EventGear · Todos os direitos reservados</p>
             <p className="text-xs text-gray-600">eventgear.app</p>
           </div>
         </div>

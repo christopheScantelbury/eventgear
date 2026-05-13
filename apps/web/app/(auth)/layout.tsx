@@ -6,7 +6,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="mb-8 flex flex-col items-center text-center">
         <BrandLockup size="lg" />
         <p className="mt-3 font-mono text-[10px] uppercase tracking-[2px] text-text-muted">
-          Equipment Control · ScantelburyDevs
+          Gestão de Equipamentos para Eventos
         </p>
       </div>
 
@@ -15,7 +15,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       </div>
 
       <p className="mt-6 font-mono text-[10px] uppercase tracking-[1.5px] text-text-muted">
-        Build · Migrate · Innovate
+        © 2026 EventGear
       </p>
     </div>
   );

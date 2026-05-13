@@ -189,7 +189,7 @@ export default function ConfiguracoesPage() {
 
       {/* Rodapé */}
       <div className="text-center py-4 space-y-2">
-        <p className="font-mono text-[10px] text-text-muted">EventGear v1.0.0 · ScantelburyDevs</p>
+        <p className="font-mono text-[10px] text-text-muted">EventGear v1.0.0</p>
         <div className="flex items-center justify-center gap-4 text-xs text-text-muted">
           <a href="#" className="hover:text-text-secondary transition-colors">Termos de Uso</a>
           <span>·</span>

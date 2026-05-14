@@ -132,44 +132,6 @@ export const customersApi = {
   remove: (id: string) => api.delete(`/customers/${id}`),
 };
 
-// --- Billing ---
-export interface Plan {
-  id: string;
-  slug: string;
-  name: string;
-  description: string | null;
-  maxMaterials: number;       // -1 = ilimitado
-  maxEventsPerMonth: number;
-  maxUsers: number;
-  maxBranches: number;
-  hasReports: boolean;
-  hasPdfExport: boolean;
-  hasMultiBranch: boolean;
-  priceMonthlyBrl: string;    // Decimal vem como string
-}
-
-export interface BillingStatus {
-  company: { id: string; name: string; trialEndsAt: string | null };
-  plan: Plan | null;
-  subscription: {
-    id: string;
-    status: string;
-    currentPeriodEnd: string | null;
-    trialEndsAt: string | null;
-    cancelAt: string | null;
-  } | null;
-  usage: { materials: number; eventsThisMonth: number; users: number };
-}
-
-export const billingApi = {
-  plans: () => api.get('/billing/plans').then((r) => r.data as Plan[]),
-  status: () => api.get('/billing/status').then((r) => r.data as BillingStatus),
-  usage: () => api.get('/billing/usage').then((r) => r.data as { materials: number; eventsThisMonth: number; users: number }),
-  checkout: (planSlug: string) =>
-    api.post('/billing/checkout', { planSlug }).then((r) => r.data as { url: string; sessionId: string }),
-  portal: () => api.post('/billing/portal').then((r) => r.data as { url: string }),
-};
-
 // --- Calendar ---
 export interface AvailabilityItem {
   materialId: string;

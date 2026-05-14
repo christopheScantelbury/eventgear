@@ -31,7 +31,6 @@ const navSections: { label: string; items: NavItem[] }[] = [
   {
     label: 'Sistema',
     items: [
-      { href: '/planos',        label: 'Planos',        module: 'planos'        },
       { href: '/configuracoes', label: 'Configurações', module: 'configuracoes' },
     ],
   },

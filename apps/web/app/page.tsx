@@ -15,64 +15,6 @@ import {
   X,
 } from 'lucide-react';
 
-/* ─── Planos ─────────────────────────────────────────────────── */
-const plans = [
-  {
-    name: 'Básico',
-    price: 'R$ 79',
-    period: 'por conta / mês',
-    description: 'Para quem está começando a organizar eventos.',
-    highlight: false,
-    cta: 'Começar 1 mês grátis',
-    href: '/register?plan=basico',
-    features: [
-      '3 usuários',
-      'Até 200 equipamentos',
-      'Até 20 eventos / mês',
-      'Checklist com QR Code',
-      'Relatórios básicos',
-    ],
-    missing: ['Exportação PDF', 'Usuários ilimitados', 'Suporte prioritário'],
-  },
-  {
-    name: 'Pro',
-    price: 'R$ 149',
-    period: 'por conta / mês',
-    description: 'Para equipes que trabalham com eventos regularmente.',
-    highlight: true,
-    cta: 'Começar 1 mês grátis',
-    href: '/register?plan=pro',
-    features: [
-      '10 usuários',
-      'Equipamentos ilimitados',
-      'Eventos ilimitados',
-      'Checklist com QR Code',
-      'Relatórios completos + PDF',
-      'Suporte prioritário',
-    ],
-    missing: ['Múltiplas unidades'],
-  },
-  {
-    name: 'Business',
-    price: 'R$ 249',
-    period: 'por conta / mês',
-    description: 'Para empresas com múltiplas equipes e alto volume.',
-    highlight: false,
-    cta: 'Começar 1 mês grátis',
-    href: '/register?plan=business',
-    features: [
-      '25 usuários',
-      'Equipamentos ilimitados',
-      'Eventos ilimitados',
-      'Checklist com QR Code',
-      'Relatórios completos + PDF',
-      'Múltiplas unidades / filiais',
-      'Suporte dedicado',
-    ],
-    missing: [],
-  },
-];
-
 /* ─── Features ───────────────────────────────────────────────── */
 const features = [
   {
@@ -106,14 +48,6 @@ const faqs = [
   {
     q: 'Como funciona o QR Code dos equipamentos?',
     a: 'Cada equipamento cadastrado gera um QR Code único. Você imprime e cola no item. Na saída e no retorno do evento, o operador escaneia e o sistema registra automaticamente.',
-  },
-  {
-    q: 'O teste gratuito tem limite de tempo?',
-    a: 'Sim. Todos os planos incluem 1 mês grátis sem cartão de crédito. Após o período de teste, você escolhe o plano que melhor se encaixa no seu uso — ou cancela sem custo.',
-  },
-  {
-    q: 'Posso cancelar quando quiser?',
-    a: 'Sim. Não há fidelidade. Cancele a qualquer momento pelo painel — sem burocracia.',
   },
 ];
 
@@ -152,7 +86,6 @@ export default function LandingPage() {
           {/* desktop nav */}
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
             <a href="#funcionalidades" className="hover:text-gray-900 transition-colors">Funcionalidades</a>
-            <a href="#precos" className="hover:text-gray-900 transition-colors">Preços</a>
           </nav>
 
           <div className="hidden md:flex items-center gap-2">
@@ -183,7 +116,6 @@ export default function LandingPage() {
         {mobileOpen && (
           <div className="md:hidden border-t border-gray-100 bg-white px-4 py-4 space-y-3">
             <a href="#funcionalidades" onClick={() => setMobileOpen(false)} className="block text-sm font-medium text-gray-700 py-1">Funcionalidades</a>
-            <a href="#precos" onClick={() => setMobileOpen(false)} className="block text-sm font-medium text-gray-700 py-1">Preços</a>
             <hr className="border-gray-100" />
             <Link href="/login" className="block text-sm font-medium text-gray-700 py-1">Entrar</Link>
             <Link
@@ -387,82 +319,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Preços ─────────────────────────────────────────────── */}
-      <section id="precos" className="py-20 sm:py-28 px-4 sm:px-6">
-        <div className="mx-auto max-w-5xl">
-          <div className="text-center mb-14">
-            <p className="text-xs font-semibold uppercase tracking-widest text-amber-600 mb-3">PREÇOS</p>
-            <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-gray-900">
-              Simples. Justo. Sem surpresa.
-            </h2>
-            <p className="mt-4 text-gray-500">
-              Comece grátis. Escale quando precisar. Cancele a qualquer hora.
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-3 gap-5 items-start">
-            {plans.map((plan) => (
-              <div
-                key={plan.name}
-                className={[
-                  'rounded-2xl border p-7 flex flex-col gap-5',
-                  plan.highlight
-                    ? 'border-amber-400 bg-white shadow-xl shadow-amber-100 relative ring-1 ring-amber-400/50'
-                    : 'border-gray-200 bg-white',
-                ].join(' ')}
-              >
-                {plan.highlight && (
-                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-amber-500 px-4 py-1 text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">
-                    Mais popular
-                  </span>
-                )}
-
-                <div>
-                  <p className="font-semibold text-gray-900 mb-3">{plan.name}</p>
-                  <div className="flex items-baseline gap-1 mb-1">
-                    <span className="font-display font-extrabold text-4xl text-gray-900">{plan.price}</span>
-                    <span className="text-sm text-gray-400">{plan.period}</span>
-                  </div>
-                  <p className="text-xs text-gray-500">{plan.description}</p>
-                </div>
-
-                <Link
-                  href={plan.href}
-                  className={[
-                    'block w-full rounded-md py-2.5 text-center text-sm font-semibold transition-colors',
-                    plan.highlight
-                      ? 'bg-amber-500 text-white hover:bg-amber-600'
-                      : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50',
-                  ].join(' ')}
-                >
-                  {plan.cta}
-                </Link>
-
-                <ul className="flex flex-col gap-2.5">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-gray-600">
-                      <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
-                      {f}
-                    </li>
-                  ))}
-                  {plan.missing.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-gray-300 line-through">
-                      <span className="h-4 w-4 shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-
-          <p className="mt-8 text-center text-xs text-gray-400">
-            Todos os planos incluem SSL, backups diários e suporte por e-mail.
-            Preços em BRL. Cobrado mensalmente.
-          </p>
-        </div>
-      </section>
-
       {/* ── FAQ ────────────────────────────────────────────────── */}
       <section className="py-20 sm:py-24 px-4 sm:px-6 bg-gray-50">
         <div className="mx-auto max-w-2xl">
@@ -519,7 +375,6 @@ export default function LandingPage() {
               <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">PRODUTO</p>
               <ul className="space-y-2.5 text-sm text-gray-500">
                 <li><a href="#funcionalidades" className="hover:text-gray-300 transition-colors">Funcionalidades</a></li>
-                <li><a href="#precos" className="hover:text-gray-300 transition-colors">Preços</a></li>
                 <li><Link href="/register" className="hover:text-gray-300 transition-colors">Criar conta</Link></li>
                 <li><Link href="/login" className="hover:text-gray-300 transition-colors">Entrar</Link></li>
               </ul>

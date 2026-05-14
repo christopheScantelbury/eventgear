@@ -176,15 +176,6 @@ export default function ConfiguracoesPage() {
         <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[2px] text-text-muted mb-4">
           <CreditCard size={12} /> Plano
         </div>
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="font-semi font-semibold text-text-primary">Trial gratuito</p>
-            <p className="text-sm text-text-muted mt-0.5">1 mês grátis · depois escolha um plano</p>
-          </div>
-          <Button size="sm" variant="ghost" onClick={() => toast('Planos em breve!', 'success')}>
-            Ver planos
-          </Button>
-        </div>
       </section>
 
       {/* Rodapé */}

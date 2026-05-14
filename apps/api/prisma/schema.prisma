@@ -10,26 +10,17 @@ datasource db {
 
 // ── Empresa (multi-tenant root) ──────────────────────────────────
 model Company {
-  id               String    @id @default(cuid())
-  name             String
-  email            String    @unique
-  phone            String?
-  // Stripe
-  stripeCustomerId String?   @unique
-  // Plano atual + trial
-  planId           String?
-  plan             Plan?     @relation(fields: [planId], references: [id])
-  trialEndsAt      DateTime?
-  createdAt        DateTime  @default(now())
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  createdAt DateTime @default(now())
 
-  users         User[]
-  materials     Material[]
-  events        Event[]
-  customers     Customer[]
-  subscriptions Subscription[]
-  auditLogs     AuditLog[]
-
-  @@index([planId])
+  users     User[]
+  materials Material[]
+  events    Event[]
+  customers Customer[]
+  auditLogs AuditLog[]
 }
 
 // ── Usuários ──────────────────────────────────────────────────────
@@ -230,70 +221,6 @@ enum CustomerType {
   PF
 }
 
-// ── Billing: Plano ───────────────────────────────────────────────
-model Plan {
-  id                String   @id @default(cuid())
-  slug              String   @unique // basico | pro | business
-  name              String
-  description       String?
-  // Limites
-  maxMaterials      Int // -1 = ilimitado
-  maxEventsPerMonth Int // -1 = ilimitado
-  maxUsers          Int
-  maxBranches       Int      @default(1)
-  // Features
-  hasReports        Boolean  @default(true)
-  hasPdfExport      Boolean  @default(false)
-  hasMultiBranch    Boolean  @default(false)
-  // Preços
-  priceMonthlyBrl   Decimal  @db.Decimal(10, 2)
-  // Stripe
-  stripeProductId   String?
-  stripePriceId     String?
-  active            Boolean  @default(true)
-  sortOrder         Int      @default(0)
-  createdAt         DateTime @default(now())
-
-  companies     Company[]
-  subscriptions Subscription[]
-}
-
-// ── Billing: Assinatura ──────────────────────────────────────────
-model Subscription {
-  id                   String             @id @default(cuid())
-  companyId            String
-  company              Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  planId               String
-  plan                 Plan               @relation(fields: [planId], references: [id])
-  // Stripe
-  stripeSubscriptionId String?            @unique
-  stripeCustomerId     String?
-  status               SubscriptionStatus @default(TRIALING)
-  // Período
-  currentPeriodStart   DateTime?
-  currentPeriodEnd     DateTime?
-  trialEndsAt          DateTime?
-  cancelAt             DateTime?
-  canceledAt           DateTime?
-  // Tracking
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @updatedAt
-
-  @@index([companyId])
-  @@index([status])
-}
-
-enum SubscriptionStatus {
-  TRIALING
-  ACTIVE
-  PAST_DUE
-  CANCELED
-  INCOMPLETE
-  INCOMPLETE_EXPIRED
-  UNPAID
-  PAUSED
-}
-
 // ── Calendário: Bloqueios (manutenção, hold) ─────────────────────
 model CalendarBlock {
   id         String   @id @default(cuid())
@@ -309,9 +236,3 @@ model CalendarBlock {
   @@index([startDate, endDate])
 }
 
-// ── Stripe: dedup de webhook events ──────────────────────────────
-model StripeEvent {
-  id          String   @id // Stripe event id
-  type        String
-  processedAt DateTime @default(now())
-}

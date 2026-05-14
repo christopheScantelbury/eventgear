@@ -5,7 +5,6 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { BillingGuardService } from '../billing/billing-guard.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { AddMaterialDto } from './dto/add-material.dto';
@@ -17,11 +16,9 @@ import { EventStatus } from '@prisma/client';
 export class EventsService {
   constructor(
     private readonly prisma: PrismaService,
-    private billingGuard: BillingGuardService,
   ) {}
 
   async create(companyId: string, dto: CreateEventDto) {
-    await this.billingGuard.ensureCanCreate(companyId, 'event');
 
     // Se customerId, valida e preenche client com o nome
     let resolvedClient = dto.client;
